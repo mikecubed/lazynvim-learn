@@ -142,7 +142,8 @@ sandbox_setup_exercise() {
             sandbox_reset "${first_file:-}" "$SANDBOX_DIR"
             ;;
         empty)
-            SANDBOX_DIR=$(mktemp -d /tmp/lazynvim-learn-exercise-XXXXXX)
+            # Use exercise-files as cwd so files are visible if user explores
+            SANDBOX_DIR="$LAZYNVIM_LEARN_ROOT/configs/exercise-files"
             sandbox_reset "" "$SANDBOX_DIR"
             ;;
         config)
