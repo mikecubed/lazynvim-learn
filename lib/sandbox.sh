@@ -126,10 +126,23 @@ sandbox_setup_exercise() {
             if [[ -d "$exercise_src" ]]; then
                 cp -r "$exercise_src/." "$SANDBOX_DIR/"
             fi
-            sandbox_reset "$SANDBOX_DIR"
+            # Open the first file in the dir rather than the dir itself
+            # (opening a dir triggers Neo-tree/dashboard instead of a buffer)
+            local first_file
+            first_file=$(find "$SANDBOX_DIR" -maxdepth 1 -type f | sort | head -1)
+            if [[ -n "$first_file" ]]; then
+                sandbox_reset "$first_file"
+            else
+                sandbox_reset "$SANDBOX_DIR"
+            fi
+            # Set nvim's working directory to the exercise dir
+            nvim_exec "cd $(printf '%q' "$SANDBOX_DIR")" 2>/dev/null || true
             ;;
         empty)
             sandbox_reset
+            # Dismiss the LazyVim dashboard and open a scratch buffer
+            sleep 0.3
+            nvim_exec "enew" 2>/dev/null || true
             ;;
         config)
             local config_dir="${HOME}/.config/lazynvim-learn"
