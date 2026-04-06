@@ -244,6 +244,7 @@ run_lesson() {
         return 1
     fi
 
+    CURRENT_LESSON="$module/$lesson"
     progress_mark_in_progress "$module/$lesson"
 
     # shellcheck source=/dev/null
@@ -438,13 +439,14 @@ main() {
     source "$PROJECT_ROOT/lib/ui.sh"
     # shellcheck source=lib/nvim_helpers.sh
     source "$PROJECT_ROOT/lib/nvim_helpers.sh"
-    # sandbox.sh may not exist yet — source only if present
-    if [[ -f "$PROJECT_ROOT/lib/sandbox.sh" ]]; then
-        # shellcheck source=lib/sandbox.sh
-        source "$PROJECT_ROOT/lib/sandbox.sh"
-    fi
+    # shellcheck source=lib/sandbox.sh
+    source "$PROJECT_ROOT/lib/sandbox.sh"
     # shellcheck source=lib/progress.sh
     source "$PROJECT_ROOT/lib/progress.sh"
+    # shellcheck source=lib/verify.sh
+    source "$PROJECT_ROOT/lib/verify.sh"
+    # shellcheck source=lib/engine.sh
+    source "$PROJECT_ROOT/lib/engine.sh"
 
     # Register cleanup trap
     trap cleanup EXIT INT TERM
