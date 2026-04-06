@@ -26,21 +26,21 @@ sandbox_launch() {
     export NVIM_SOCKET
     export NVIM_APPNAME
 
+    # Build the nvim command
+    local nvim_cmd="nvim --listen ${NVIM_SOCKET}"
+    [[ -n "$file" ]] && nvim_cmd="$nvim_cmd $(printf '%q' "$file")"
+
     # Split the tmux window and launch nvim.
     # NVIM_APPNAME is exported so the child process inherits it.
-    if [[ -n "$file" ]]; then
-        SANDBOX_PANE=$(tmux split-window -v -p 40 -P -F '#{pane_id}' \
-            "nvim --listen ${NVIM_SOCKET} $(printf '%q' "$file")") || {
+    # Try percentage split first; fall back to fixed lines if pane is small.
+    SANDBOX_PANE=$(tmux split-window -v -p 40 -P -F '#{pane_id}' "$nvim_cmd" 2>/dev/null) \
+        || SANDBOX_PANE=$(tmux split-window -v -l 12 -P -F '#{pane_id}' "$nvim_cmd" 2>/dev/null) \
+        || SANDBOX_PANE=$(tmux split-window -v -P -F '#{pane_id}' "$nvim_cmd" 2>/dev/null) \
+        || {
             echo "Error: failed to create tmux pane for Neovim sandbox." >&2
+            echo "       Try making your terminal window taller." >&2
             return 1
         }
-    else
-        SANDBOX_PANE=$(tmux split-window -v -p 40 -P -F '#{pane_id}' \
-            "nvim --listen ${NVIM_SOCKET}") || {
-            echo "Error: failed to create tmux pane for Neovim sandbox." >&2
-            return 1
-        }
-    fi
 
     # Keep the pane open if nvim exits unexpectedly so the error is visible
     tmux set-option -t "$SANDBOX_PANE" remain-on-exit on 2>/dev/null || true
