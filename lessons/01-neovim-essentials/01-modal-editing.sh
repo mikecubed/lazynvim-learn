@@ -136,7 +136,7 @@ Normal mode. Here you can save files (':w'), quit (':q'), run substitutions
     engine_section "The Mode Indicator"
     # -----------------------------------------------------------------------
 
-    engine_teach "Look at the bottom-left of the Neovim pane below. LazyVim shows a colored
+    engine_teach "Look at the bottom-left of the Neovim pane (to the right). LazyVim shows a colored
 status indicator that tells you the current mode:
 
   NORMAL  — you are in Normal mode (usually blue)
@@ -168,8 +168,12 @@ avoids reaching for Escape. You can use either 'jk' or Escape — both work."
     # -----------------------------------------------------------------------
 
     # Exercise 1: Reach Insert mode and come back
-    engine_teach "Time to practice! The Neovim pane below is ready. Work through each
-exercise and press Check when you're done."
+    engine_teach "Time to practice! Neovim is open in the pane to the right.
+
+How exercises work:
+  1. Read the instructions here (left pane)
+  2. Click the Neovim pane (right) and do the task
+  3. Click back here and type 'check' to verify"
 
     engine_exercise "enter-insert-mode" \
         "Enter and Leave Insert Mode" \

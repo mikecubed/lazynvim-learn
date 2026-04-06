@@ -172,12 +172,15 @@ engine_exercise() {
     fi
 
     # Display exercise header and instructions
-    ui_subheader "$title"
+    printf '\n'
+    printf "${COLOR_BOLD}${COLOR_GREEN}>>> Exercise: %s${COLOR_RESET}\n" "$title"
+    printf '\n'
+    printf "${COLOR_BOLD}In the Neovim pane:${COLOR_RESET}\n"
     ui_print_wrapped "$instructions"
     printf '\n'
-
-    # Show available commands hint
-    ui_print "${COLOR_DIM}Commands: check | hint | help | skip | quit${COLOR_RESET}"
+    printf "${COLOR_DIM}When done, click this pane and type:${COLOR_RESET}\n"
+    printf "${COLOR_DIM}  check — verify your work    hint — get a hint${COLOR_RESET}\n"
+    printf "${COLOR_DIM}  skip  — skip exercise       quit — exit lesson${COLOR_RESET}\n"
     printf '\n'
 
     local fail_count=0
