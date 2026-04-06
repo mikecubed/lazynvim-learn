@@ -259,6 +259,44 @@ run_lesson() {
     fi
 
     progress_mark_complete "$module/$lesson"
+
+    # Show the completion screen after the final capstone lesson
+    if [[ "$module" == "05-workflows" && "$lesson" == "04-putting-it-together" ]]; then
+        show_completion_screen
+    fi
+}
+
+# ---------------------------------------------------------------------------
+# show_completion_screen
+# Displayed when the final capstone lesson (05-workflows/04-putting-it-together)
+# is completed.
+# ---------------------------------------------------------------------------
+show_completion_screen() {
+    clear 2>/dev/null || true
+    if declare -f ui_header &>/dev/null; then
+        ui_header "Congratulations — You Did It!"
+    else
+        echo "============================================"
+        echo "  Congratulations — You Did It!"
+        echo "============================================"
+    fi
+    cat <<'EOF'
+
+  You have completed all five modules of lazynvim-learn!
+
+  You now know how to:
+    - Navigate files and buffers at speed
+    - Edit text with Neovim motions and operators
+    - Manage your workspace with windows, tabs, and sessions
+    - Extend LazyVim with plugins and custom config
+    - Apply everything in real-world development workflows
+
+  Keep practising — muscle memory comes with repetition.
+  Run lazynvim-learn again any time to revisit a lesson.
+
+EOF
+    printf "Press Enter to return to the main menu. "
+    read -r
 }
 
 # ---------------------------------------------------------------------------

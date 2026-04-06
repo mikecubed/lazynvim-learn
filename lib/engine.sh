@@ -174,7 +174,7 @@ engine_exercise() {
     printf '\n'
 
     # Show available commands hint
-    ui_print "${COLOR_DIM}Commands: check | hint | skip | quit${COLOR_RESET}"
+    ui_print "${COLOR_DIM}Commands: check | hint | help | skip | quit${COLOR_RESET}"
     printf '\n'
 
     local fail_count=0
@@ -192,6 +192,13 @@ engine_exercise() {
 
         case "$input" in
             check)
+                # If the sandbox has died, restart it before verifying
+                if declare -f sandbox_is_alive &>/dev/null && ! sandbox_is_alive; then
+                    ui_warn "Neovim appears to have crashed. Restarting sandbox..."
+                    sandbox_reset
+                    printf '\n'
+                fi
+
                 # Reset hint/message globals before calling verifier
                 VERIFY_MESSAGE=""
                 VERIFY_HINT=""
@@ -237,6 +244,14 @@ engine_exercise() {
                 _ENGINE_QUIT=1
                 return 2
                 ;;
+            help)
+                ui_print "${COLOR_DIM}  check  — verify your work in Neovim${COLOR_RESET}"
+                ui_print "${COLOR_DIM}  hint   — show a hint for this exercise${COLOR_RESET}"
+                ui_print "${COLOR_DIM}  skip   — mark this exercise done and move on${COLOR_RESET}"
+                ui_print "${COLOR_DIM}  quit   — exit the lesson and return to the menu${COLOR_RESET}"
+                ui_print "${COLOR_DIM}  (work in the Neovim pane below, then type 'check' here)${COLOR_RESET}"
+                printf '\n'
+                ;;
             "")
                 # Empty input — show help
                 ui_print "${COLOR_DIM}  check  — verify your work in Neovim${COLOR_RESET}"
@@ -247,7 +262,7 @@ engine_exercise() {
                 ;;
             *)
                 # Unrecognised input — show help
-                ui_print "${COLOR_DIM}Unknown command '${input}'. Try: check, hint, skip, quit${COLOR_RESET}"
+                ui_print "${COLOR_DIM}Unknown command '${input}'. Try: check, hint, help, skip, quit${COLOR_RESET}"
                 printf '\n'
                 ;;
         esac
