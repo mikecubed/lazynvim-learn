@@ -19,23 +19,31 @@ SANDBOX_DIR=""
 # then wait until nvim is accepting RPC connections.
 sandbox_launch() {
     local file="${1:-}"
-    local cmd
 
     # Remove stale socket from a previous run
     [[ -S "$NVIM_SOCKET" ]] && rm -f "$NVIM_SOCKET"
 
     export NVIM_SOCKET
+    export NVIM_APPNAME
 
+    # Split the tmux window and launch nvim.
+    # NVIM_APPNAME is exported so the child process inherits it.
     if [[ -n "$file" ]]; then
-        cmd="NVIM_APPNAME=$NVIM_APPNAME nvim --listen $NVIM_SOCKET $(printf '%q' "$file")"
+        SANDBOX_PANE=$(tmux split-window -v -p 40 -P -F '#{pane_id}' \
+            "nvim --listen ${NVIM_SOCKET} $(printf '%q' "$file")") || {
+            echo "Error: failed to create tmux pane for Neovim sandbox." >&2
+            return 1
+        }
     else
-        cmd="NVIM_APPNAME=$NVIM_APPNAME nvim --listen $NVIM_SOCKET"
+        SANDBOX_PANE=$(tmux split-window -v -p 40 -P -F '#{pane_id}' \
+            "nvim --listen ${NVIM_SOCKET}") || {
+            echo "Error: failed to create tmux pane for Neovim sandbox." >&2
+            return 1
+        }
     fi
 
-    SANDBOX_PANE=$(tmux split-window -v -p 40 -P -F '#{pane_id}' "$cmd") || {
-        echo "Error: failed to create tmux pane for Neovim sandbox." >&2
-        return 1
-    }
+    # Keep the pane open if nvim exits unexpectedly so the error is visible
+    tmux set-option -t "$SANDBOX_PANE" remain-on-exit on 2>/dev/null || true
 
     # Wait for nvim to be ready. Use a generous timeout on first launch
     # since LazyVim may need to install plugins.
@@ -44,6 +52,7 @@ sandbox_launch() {
         echo "         Waiting a bit longer..." >&2
         nvim_wait_ready 60 || {
             echo "Error: Neovim did not respond within 90 seconds." >&2
+            echo "         Check the bottom pane for errors." >&2
             return 1
         }
     fi

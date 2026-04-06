@@ -152,14 +152,26 @@ bootstrap_config() {
     local config_src="$PROJECT_ROOT/configs/base"
 
     if [[ "$RESET_CONFIG" -eq 1 ]] || [[ ! -d "$config_dest" ]]; then
-        echo "Setting up LazyVim config at $config_dest ..."
+        echo "Setting up LazyVim sandbox config at $config_dest ..."
+
+        if [[ ! -d "$config_src" ]]; then
+            echo "Error: config source not found at $config_src" >&2
+            echo "       Are you running from the lazynvim-learn project directory?" >&2
+            exit 1
+        fi
+
+        rm -rf "$config_dest"
         mkdir -p "$config_dest"
         cp -r "$config_src/." "$config_dest/"
-        echo "Config installed."
+        echo "Config files copied."
 
-        echo "Syncing plugins (this may take a moment on first run) ..."
-        NVIM_APPNAME=lazynvim-learn nvim --headless "+Lazy! sync" +qa 2>/dev/null || true
-        echo "Plugin sync complete."
+        echo "Syncing plugins (this may take a minute on first run) ..."
+        export NVIM_APPNAME=lazynvim-learn
+        if ! nvim --headless '+Lazy! sync' +qa 2>&1; then
+            echo "Warning: Plugin sync may not have completed successfully."
+            echo "         Neovim will attempt to install plugins on first launch."
+        fi
+        echo "Bootstrap complete."
     fi
 }
 
