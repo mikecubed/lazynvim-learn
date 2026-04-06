@@ -49,18 +49,20 @@ nvim_is_running() {
 }
 
 # nvim_wait_ready [timeout_secs]
-# Poll nvim_is_running every 0.1 s until it responds or timeout expires.
+# Poll nvim_is_running every 0.5s until it responds or timeout expires.
 # Default timeout: 10 seconds.
 # Returns 0 on success, 1 on timeout.
 nvim_wait_ready() {
     local timeout="${1:-10}"
-    local elapsed=0
-    local interval="0.1"
+    # Convert timeout to max attempts (2 per second). Use awk for fractional support.
+    local attempts
+    attempts=$(awk "BEGIN{v=int(${timeout}*2); if(v<1) v=1; print v}")
+    local i=0
 
     while ! nvim_is_running; do
-        sleep "$interval"
-        elapsed=$(echo "$elapsed + $interval" | bc 2>/dev/null || awk "BEGIN{print $elapsed + $interval}")
-        if (( $(echo "$elapsed >= $timeout" | bc -l 2>/dev/null || awk "BEGIN{print ($elapsed >= $timeout) ? 1 : 0}") )); then
+        sleep 0.5
+        i=$(( i + 1 ))
+        if [[ $i -ge $attempts ]]; then
             return 1
         fi
     done

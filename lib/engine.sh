@@ -165,7 +165,10 @@ engine_exercise() {
 
     # Set up sandbox unless type is "current" or "none"
     if [[ "$sandbox_type" != "current" && "$sandbox_type" != "none" ]]; then
-        sandbox_setup_exercise "$sandbox_type" "${sandbox_args[@]}"
+        if ! sandbox_setup_exercise "$sandbox_type" "${sandbox_args[@]}"; then
+            ui_error "Failed to set up the Neovim sandbox. Skipping exercise."
+            return 1
+        fi
     fi
 
     # Display exercise header and instructions

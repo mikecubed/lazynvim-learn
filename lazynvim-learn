@@ -78,7 +78,7 @@ _check_bash_version() {
 _check_nvim_version() {
     if ! command -v nvim &>/dev/null; then
         echo "Error: 'nvim' not found in PATH." >&2
-        echo "       Install Neovim 0.12.1 or later: https://neovim.io" >&2
+        echo "       Install Neovim 0.12.0 or later: https://neovim.io" >&2
         exit 1
     fi
 
@@ -93,20 +93,20 @@ _check_nvim_version() {
         exit 1
     fi
 
-    local required_int=1201   # 0.12.1 → 0*10000 + 12*100 + 1
+    local required_int=1200   # 0.12.0 → 0*10000 + 12*100 + 0
     local actual_int
     actual_int="$(version_to_int "$nvim_version")"
 
     if [[ "$actual_int" -lt "$required_int" ]]; then
-        echo "Error: lazynvim-learn requires Neovim 0.12.1 or later." >&2
+        echo "Error: lazynvim-learn requires Neovim 0.12.0 or later." >&2
         echo "       Found: $nvim_version" >&2
         echo "       Install a newer version: https://neovim.io" >&2
         exit 1
     fi
 }
 
-# parse_nvim_version "NVIM v0.12.1"
-# Print just the version number (e.g. "0.12.1"), or empty string on failure.
+# parse_nvim_version "NVIM v0.12.0"
+# Print just the version number (e.g. "0.12.0"), or empty string on failure.
 parse_nvim_version() {
     local raw="$1"
     # Match "NVIM v<major>.<minor>.<patch>" and capture the numeric part
@@ -255,7 +255,7 @@ run_lesson() {
     fi
 
     if declare -f lesson_run &>/dev/null; then
-        lesson_run
+        lesson_run || true
     fi
 
     progress_mark_complete "$module/$lesson"

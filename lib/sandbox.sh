@@ -21,6 +21,9 @@ sandbox_launch() {
     local file="${1:-}"
     local cmd
 
+    # Remove stale socket from a previous run
+    [[ -S "$NVIM_SOCKET" ]] && rm -f "$NVIM_SOCKET"
+
     export NVIM_SOCKET
 
     if [[ -n "$file" ]]; then
@@ -29,9 +32,22 @@ sandbox_launch() {
         cmd="NVIM_APPNAME=$NVIM_APPNAME nvim --listen $NVIM_SOCKET"
     fi
 
-    SANDBOX_PANE=$(tmux split-window -v -p 40 -P -F '#{pane_id}' "$cmd")
+    SANDBOX_PANE=$(tmux split-window -v -p 40 -P -F '#{pane_id}' "$cmd") || {
+        echo "Error: failed to create tmux pane for Neovim sandbox." >&2
+        return 1
+    }
 
-    nvim_wait_ready
+    # Wait for nvim to be ready. Use a generous timeout on first launch
+    # since LazyVim may need to install plugins.
+    if ! nvim_wait_ready 30; then
+        echo "Warning: Neovim is slow to start (plugin install may be in progress)." >&2
+        echo "         Waiting a bit longer..." >&2
+        nvim_wait_ready 60 || {
+            echo "Error: Neovim did not respond within 90 seconds." >&2
+            return 1
+        }
+    fi
+    return 0
 }
 
 # ---------------------------------------------------------------------------
@@ -55,7 +71,7 @@ sandbox_kill() {
 # ---------------------------------------------------------------------------
 sandbox_reset() {
     sandbox_kill
-    sandbox_launch "${1:-}"
+    sandbox_launch "${1:-}" || return 1
 }
 
 # ---------------------------------------------------------------------------
