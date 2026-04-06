@@ -155,7 +155,8 @@ two exercises below."
         "Press 's', type 'pr', wait for flash labels to appear, then press the label shown next to any occurrence of 'priority' to land on that line." \
         verify_on_priority_line \
         "Press 's', type the letters 'pr' (for 'priority'), then press the label letter flashed next to the target word." \
-        "file"
+        "file" \
+        "sample.py"
 
     [[ $_ENGINE_QUIT -eq 1 ]] && return
 
@@ -170,7 +171,8 @@ will be selected in Visual mode."
         "Press capital 'S' (Shift+s) to start Treesitter flash. Press any label to select that node. You should end up in Visual mode with a code node highlighted." \
         verify_treesitter_visual \
         "Press Escape first to ensure Normal mode, then press capital 'S'. Press any visible label letter — you should see a block highlighted in Visual mode." \
-        "file"
+        "file" \
+        "sample.py"
 
     [[ $_ENGINE_QUIT -eq 1 ]] && return
 

@@ -241,7 +241,8 @@ to go back. These are especially powerful for quick edits within a line."
         "Navigate to line 29 in the file. Use '29G' for a direct jump, or ':29<Enter>' from Command-line mode." \
         verify_on_line_29 \
         "Type '29G' (twenty-nine, then capital G) to jump directly to line 29." \
-        "file"
+        "file" \
+        "sample.md"
 
     # Exercise 2: use f motion to reach a specific word
     engine_teach "For the next exercise you will use the 'f' find motion. First go to line

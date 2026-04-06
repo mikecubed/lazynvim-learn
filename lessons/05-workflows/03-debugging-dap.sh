@@ -156,7 +156,8 @@ The check passes when a breakpoint is registered on line 17."
         "Navigate to line 17 (try '17G' or ':17<Enter>') and press <leader>db to toggle a breakpoint. A gutter marker should appear. Press Check when done." \
         verify_breakpoint_on_line_17 \
         "Press '17G' to jump to line 17, then press Space d b to set a breakpoint on that line." \
-        "file"
+        "file" \
+        "sample.py"
 
     [[ $_ENGINE_QUIT -eq 1 ]] && return
 

@@ -112,11 +112,17 @@ sandbox_setup_exercise() {
         file)
             local src="${1:-}"
             SANDBOX_DIR=$(mktemp -d /tmp/lazynvim-learn-exercise-XXXXXX)
+
+            # Resolve bare filenames (e.g. "sample.py") from exercise-files/
+            if [[ -n "$src" && ! -f "$src" && -f "$LAZYNVIM_LEARN_ROOT/configs/exercise-files/$src" ]]; then
+                src="$LAZYNVIM_LEARN_ROOT/configs/exercise-files/$src"
+            fi
+
             if [[ -n "$src" && -f "$src" ]]; then
                 cp "$src" "$SANDBOX_DIR/"
-                local dest="$SANDBOX_DIR/$(basename "$src")"
-                sandbox_reset "$dest"
+                sandbox_reset "$SANDBOX_DIR/$(basename "$src")"
             else
+                # No file specified — open an empty buffer in the temp dir
                 sandbox_reset
             fi
             ;;
@@ -140,9 +146,6 @@ sandbox_setup_exercise() {
             ;;
         empty)
             sandbox_reset
-            # Dismiss the LazyVim dashboard and open a scratch buffer
-            sleep 0.3
-            nvim_exec "enew" 2>/dev/null || true
             ;;
         config)
             local config_dir="${HOME}/.config/lazynvim-learn"

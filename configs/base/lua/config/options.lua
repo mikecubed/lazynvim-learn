@@ -14,3 +14,7 @@ opt.updatetime = 250
 
 -- Disable clipboard integration (tutorial uses registers)
 opt.clipboard = ""
+
+-- Disable the startup dashboard so nvim opens to a plain buffer.
+-- The tutorial engine controls what appears in each exercise.
+vim.g.snacks_dashboard = false
