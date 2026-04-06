@@ -35,20 +35,19 @@ sandbox_launch() {
     local -a tmux_args=(-v -P -F '#{pane_id}')
     [[ -n "$cwd" ]] && tmux_args+=(-c "$cwd")
 
-    # Split the tmux window and launch nvim.
+    # Split the tmux window horizontally (side by side).
+    # Tutorial stays on the left, nvim opens on the right.
     # NVIM_APPNAME is exported so the child process inherits it.
-    # Try percentage split first; fall back if pane is small.
-    SANDBOX_PANE=$(tmux split-window "${tmux_args[@]}" -p 65 "$nvim_cmd" 2>/dev/null) \
-        || SANDBOX_PANE=$(tmux split-window "${tmux_args[@]}" "$nvim_cmd" 2>/dev/null) \
+    SANDBOX_PANE=$(tmux split-window "${tmux_args[@]}" -h -p 55 "$nvim_cmd" 2>/dev/null) \
+        || SANDBOX_PANE=$(tmux split-window "${tmux_args[@]}" -h "$nvim_cmd" 2>/dev/null) \
         || {
             echo "Error: failed to create tmux pane for Neovim sandbox." >&2
-            echo "       Try making your terminal window taller." >&2
+            echo "       Try making your terminal window wider." >&2
             return 1
         }
 
-    # Resize: ensure the nvim pane gets at least 65% of the window.
-    # The tutorial pane (top) can work with fewer lines.
-    tmux resize-pane -t "$SANDBOX_PANE" -y 65% 2>/dev/null || true
+    # Resize: give nvim 55% of the width
+    tmux resize-pane -t "$SANDBOX_PANE" -x 55% 2>/dev/null || true
 
     # Keep the pane open if nvim exits unexpectedly so the error is visible
     tmux set-option -t "$SANDBOX_PANE" remain-on-exit on 2>/dev/null || true
@@ -142,9 +141,12 @@ sandbox_setup_exercise() {
             sandbox_reset "${first_file:-}" "$SANDBOX_DIR"
             ;;
         empty)
-            # Use exercise-files as cwd so files are visible if user explores
-            SANDBOX_DIR="$LAZYNVIM_LEARN_ROOT/configs/exercise-files"
-            sandbox_reset "" "$SANDBOX_DIR"
+            SANDBOX_DIR=$(mktemp -d /tmp/lazynvim-learn-exercise-XXXXXX)
+            # Create a scratch file so nvim opens directly into a buffer
+            # instead of showing the start screen
+            local scratch="$SANDBOX_DIR/scratch"
+            touch "$scratch"
+            sandbox_reset "$scratch" "$SANDBOX_DIR"
             ;;
         config)
             local config_dir="${HOME}/.config/lazynvim-learn"
