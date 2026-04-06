@@ -33,7 +33,7 @@ sandbox_launch() {
     # Split the tmux window and launch nvim.
     # NVIM_APPNAME is exported so the child process inherits it.
     # Try percentage split first; fall back to fixed lines if pane is small.
-    SANDBOX_PANE=$(tmux split-window -v -p 40 -P -F '#{pane_id}' "$nvim_cmd" 2>/dev/null) \
+    SANDBOX_PANE=$(tmux split-window -v -p 65 -P -F '#{pane_id}' "$nvim_cmd" 2>/dev/null) \
         || SANDBOX_PANE=$(tmux split-window -v -l 12 -P -F '#{pane_id}' "$nvim_cmd" 2>/dev/null) \
         || SANDBOX_PANE=$(tmux split-window -v -P -F '#{pane_id}' "$nvim_cmd" 2>/dev/null) \
         || {

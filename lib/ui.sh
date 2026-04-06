@@ -108,8 +108,8 @@ ui_typewriter() {
     for (( i=0; i<${#text}; i++ )); do
         # Check if input is available (non-blocking read with 0 timeout)
         if read -r -t 0 2>/dev/null; then
-            # Consume the keypress
-            read -r -n 1 _ui_tw_dummy 2>/dev/null || true
+            # Consume the keypress without echoing
+            read -r -s -n 1 _ui_tw_dummy 2>/dev/null || true
             # Print the rest of the text at once
             printf '%s\n' "${text:$i}"
             return
