@@ -9,4 +9,9 @@ return {
       -- No keymaps, no UI — this is a headless support plugin
     end,
   },
+
+  -- Disable all startup dashboard plugins so exercises open to a plain buffer
+  { "nvimdev/dashboard-nvim", enabled = false },
+  { "goolord/alpha-nvim", enabled = false },
+  { "folke/snacks.nvim", opts = { dashboard = { enabled = false } } },
 }

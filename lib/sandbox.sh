@@ -19,6 +19,7 @@ SANDBOX_DIR=""
 # then wait until nvim is accepting RPC connections.
 sandbox_launch() {
     local file="${1:-}"
+    local cwd="${2:-}"
 
     # Remove stale socket from a previous run
     [[ -S "$NVIM_SOCKET" ]] && rm -f "$NVIM_SOCKET"
@@ -30,11 +31,15 @@ sandbox_launch() {
     local nvim_cmd="nvim --listen ${NVIM_SOCKET}"
     [[ -n "$file" ]] && nvim_cmd="$nvim_cmd $(printf '%q' "$file")"
 
+    # Build tmux split args — set starting directory if provided
+    local -a tmux_args=(-v -P -F '#{pane_id}')
+    [[ -n "$cwd" ]] && tmux_args+=(-c "$cwd")
+
     # Split the tmux window and launch nvim.
     # NVIM_APPNAME is exported so the child process inherits it.
-    # Try percentage split first; fall back to fixed lines if pane is small.
-    SANDBOX_PANE=$(tmux split-window -v -p 65 -P -F '#{pane_id}' "$nvim_cmd" 2>/dev/null) \
-        || SANDBOX_PANE=$(tmux split-window -v -P -F '#{pane_id}' "$nvim_cmd" 2>/dev/null) \
+    # Try percentage split first; fall back if pane is small.
+    SANDBOX_PANE=$(tmux split-window "${tmux_args[@]}" -p 65 "$nvim_cmd" 2>/dev/null) \
+        || SANDBOX_PANE=$(tmux split-window "${tmux_args[@]}" "$nvim_cmd" 2>/dev/null) \
         || {
             echo "Error: failed to create tmux pane for Neovim sandbox." >&2
             echo "       Try making your terminal window taller." >&2
@@ -83,7 +88,7 @@ sandbox_kill() {
 # ---------------------------------------------------------------------------
 sandbox_reset() {
     sandbox_kill
-    sandbox_launch "${1:-}" || return 1
+    sandbox_launch "${1:-}" "${2:-}" || return 1
 }
 
 # ---------------------------------------------------------------------------
@@ -120,10 +125,9 @@ sandbox_setup_exercise() {
 
             if [[ -n "$src" && -f "$src" ]]; then
                 cp "$src" "$SANDBOX_DIR/"
-                sandbox_reset "$SANDBOX_DIR/$(basename "$src")"
+                sandbox_reset "$SANDBOX_DIR/$(basename "$src")" "$SANDBOX_DIR"
             else
-                # No file specified — open an empty buffer in the temp dir
-                sandbox_reset
+                sandbox_reset "" "$SANDBOX_DIR"
             fi
             ;;
         dir)
@@ -133,23 +137,17 @@ sandbox_setup_exercise() {
                 cp -r "$exercise_src/." "$SANDBOX_DIR/"
             fi
             # Open the first file in the dir rather than the dir itself
-            # (opening a dir triggers Neo-tree/dashboard instead of a buffer)
             local first_file
             first_file=$(find "$SANDBOX_DIR" -maxdepth 1 -type f | sort | head -1)
-            if [[ -n "$first_file" ]]; then
-                sandbox_reset "$first_file"
-            else
-                sandbox_reset "$SANDBOX_DIR"
-            fi
-            # Set nvim's working directory to the exercise dir
-            nvim_exec "cd $(printf '%q' "$SANDBOX_DIR")" 2>/dev/null || true
+            sandbox_reset "${first_file:-}" "$SANDBOX_DIR"
             ;;
         empty)
-            sandbox_reset
+            SANDBOX_DIR=$(mktemp -d /tmp/lazynvim-learn-exercise-XXXXXX)
+            sandbox_reset "" "$SANDBOX_DIR"
             ;;
         config)
             local config_dir="${HOME}/.config/lazynvim-learn"
-            sandbox_reset "$config_dir"
+            sandbox_reset "$config_dir" "$config_dir"
             ;;
         current)
             # Leave the existing sandbox unchanged.
