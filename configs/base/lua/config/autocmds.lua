@@ -1,0 +1,2 @@
+-- Autocmds for the lazynvim-learn tutorial sandbox
+-- Standard LazyVim autocmds are loaded automatically.

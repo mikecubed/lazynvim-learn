@@ -1,0 +1,3 @@
+-- Keymaps for the lazynvim-learn tutorial sandbox
+-- Standard LazyVim keymaps are loaded automatically.
+-- No additional keymaps needed for the tutorial.
