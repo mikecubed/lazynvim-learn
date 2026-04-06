@@ -8,11 +8,14 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-# Counters
-TESTS_RUN=0
-TESTS_PASSED=0
-TESTS_FAILED=0
-FAILURES=()
+# Guard counter initialization against re-sourcing
+if [[ -z "${_TEST_RUNNER_LOADED:-}" ]]; then
+    TESTS_RUN=0
+    TESTS_PASSED=0
+    TESTS_FAILED=0
+    FAILURES=()
+    _TEST_RUNNER_LOADED=1
+fi
 
 # Colors
 RED='\033[0;31m'

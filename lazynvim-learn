@@ -1,0 +1,467 @@
+#!/usr/bin/env bash
+# lazynvim-learn — Entry point for the interactive Neovim/LazyVim tutorial
+set -euo pipefail
+
+VERSION="0.1.0"
+
+# ---------------------------------------------------------------------------
+# Resolve PROJECT_ROOT from the location of this script
+# ---------------------------------------------------------------------------
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# ---------------------------------------------------------------------------
+# parse_args
+# Handle --version, --help, --reset-config flags.
+# Sets RESET_CONFIG=1 if --reset-config is passed.
+# ---------------------------------------------------------------------------
+RESET_CONFIG=0
+
+parse_args() {
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --version)
+                echo "lazynvim-learn $VERSION"
+                exit 0
+                ;;
+            --help|-h)
+                print_usage
+                exit 0
+                ;;
+            --reset-config)
+                RESET_CONFIG=1
+                ;;
+            *)
+                echo "Unknown option: $1" >&2
+                print_usage >&2
+                exit 1
+                ;;
+        esac
+        shift
+    done
+}
+
+print_usage() {
+    cat <<EOF
+Usage: lazynvim-learn [OPTIONS]
+
+An interactive terminal tutorial for learning Neovim and LazyVim.
+
+Options:
+  --version       Print version and exit
+  --reset-config  Re-copy the base LazyVim config and re-sync plugins
+  --help, -h      Show this help message and exit
+EOF
+}
+
+# ---------------------------------------------------------------------------
+# check_prerequisites
+# Verify all runtime dependencies and environment requirements.
+# Exits with a helpful message on failure.
+# ---------------------------------------------------------------------------
+check_prerequisites() {
+    _check_bash_version
+    _check_nvim_version
+    _check_tmux_running
+    _check_git_available
+}
+
+_check_bash_version() {
+    local major="${BASH_VERSINFO[0]:-0}"
+    if [[ "$major" -lt 4 ]]; then
+        echo "Error: lazynvim-learn requires Bash 4.0 or later." >&2
+        echo "       You are running Bash ${BASH_VERSION}." >&2
+        echo "       On macOS, install a newer bash: brew install bash" >&2
+        exit 1
+    fi
+}
+
+_check_nvim_version() {
+    if ! command -v nvim &>/dev/null; then
+        echo "Error: 'nvim' not found in PATH." >&2
+        echo "       Install Neovim 0.12.1 or later: https://neovim.io" >&2
+        exit 1
+    fi
+
+    local raw_version
+    raw_version="$(nvim --version 2>/dev/null | head -1)"
+
+    local nvim_version
+    nvim_version="$(parse_nvim_version "$raw_version")"
+
+    if [[ -z "$nvim_version" ]]; then
+        echo "Error: Could not parse Neovim version from: $raw_version" >&2
+        exit 1
+    fi
+
+    local required_int=1201   # 0.12.1 → 0*10000 + 12*100 + 1
+    local actual_int
+    actual_int="$(version_to_int "$nvim_version")"
+
+    if [[ "$actual_int" -lt "$required_int" ]]; then
+        echo "Error: lazynvim-learn requires Neovim 0.12.1 or later." >&2
+        echo "       Found: $nvim_version" >&2
+        echo "       Install a newer version: https://neovim.io" >&2
+        exit 1
+    fi
+}
+
+# parse_nvim_version "NVIM v0.12.1"
+# Print just the version number (e.g. "0.12.1"), or empty string on failure.
+parse_nvim_version() {
+    local raw="$1"
+    # Match "NVIM v<major>.<minor>.<patch>" and capture the numeric part
+    if [[ "$raw" =~ NVIM[[:space:]]+v([0-9]+\.[0-9]+\.[0-9]+) ]]; then
+        echo "${BASH_REMATCH[1]}"
+    else
+        echo ""
+    fi
+}
+
+# version_to_int "major.minor.patch"
+# Print major*10000 + minor*100 + patch as an integer for simple comparison.
+version_to_int() {
+    local ver="$1"
+    local major minor patch
+    IFS='.' read -r major minor patch <<< "$ver"
+    echo $(( major * 10000 + minor * 100 + patch ))
+}
+
+_check_tmux_running() {
+    if [[ -z "${TMUX:-}" ]]; then
+        echo "Error: lazynvim-learn must be run inside a tmux session." >&2
+        echo "       Start tmux first: tmux new-session" >&2
+        exit 1
+    fi
+}
+
+_check_git_available() {
+    if ! command -v git &>/dev/null; then
+        echo "Error: 'git' not found in PATH." >&2
+        echo "       Git is required for LazyVim plugin management." >&2
+        exit 1
+    fi
+}
+
+# ---------------------------------------------------------------------------
+# bootstrap_config
+# Copy configs/base/ to ~/.config/lazynvim-learn/ on first run or
+# when --reset-config is requested, then sync plugins.
+# ---------------------------------------------------------------------------
+bootstrap_config() {
+    local config_dest="$HOME/.config/lazynvim-learn"
+    local config_src="$PROJECT_ROOT/configs/base"
+
+    if [[ "$RESET_CONFIG" -eq 1 ]] || [[ ! -d "$config_dest" ]]; then
+        echo "Setting up LazyVim config at $config_dest ..."
+        mkdir -p "$config_dest"
+        cp -r "$config_src/." "$config_dest/"
+        echo "Config installed."
+
+        echo "Syncing plugins (this may take a moment on first run) ..."
+        NVIM_APPNAME=lazynvim-learn nvim --headless "+Lazy! sync" +qa 2>/dev/null || true
+        echo "Plugin sync complete."
+    fi
+}
+
+# ---------------------------------------------------------------------------
+# show_header
+# ---------------------------------------------------------------------------
+show_header() {
+    # Use ui_header if ui.sh has been sourced, otherwise fall back to plain text
+    if declare -f ui_header &>/dev/null; then
+        ui_header "lazynvim-learn v${VERSION}"
+    else
+        echo "====================================="
+        echo "  lazynvim-learn v${VERSION}"
+        echo "====================================="
+    fi
+}
+
+# ---------------------------------------------------------------------------
+# discover_modules
+# Print a sorted list of module directory names from lessons/.
+# ---------------------------------------------------------------------------
+discover_modules() {
+    local lessons_dir="$PROJECT_ROOT/lessons"
+    if [[ ! -d "$lessons_dir" ]]; then
+        return
+    fi
+    find "$lessons_dir" -mindepth 1 -maxdepth 1 -type d -print0 2>/dev/null \
+        | sort -z \
+        | while IFS= read -r -d '' dir; do
+            basename "$dir"
+        done
+}
+
+# ---------------------------------------------------------------------------
+# discover_lessons "module"
+# Print sorted list of lesson .sh files (basename without .sh) for a module.
+# ---------------------------------------------------------------------------
+discover_lessons() {
+    local module="$1"
+    local module_dir="$PROJECT_ROOT/lessons/$module"
+    if [[ ! -d "$module_dir" ]]; then
+        return
+    fi
+    find "$module_dir" -maxdepth 1 -name '*.sh' -type f -print0 2>/dev/null \
+        | sort -z \
+        | while IFS= read -r -d '' f; do
+            basename "$f" .sh
+        done
+}
+
+# ---------------------------------------------------------------------------
+# find_last_in_progress
+# Print "module/lesson" for the most recently marked in-progress entry,
+# or empty string if none.
+# ---------------------------------------------------------------------------
+find_last_in_progress() {
+    if [[ ! -f "$PROGRESS_FILE" ]]; then
+        echo ""
+        return
+    fi
+    local last=""
+    local line
+    while IFS= read -r line; do
+        if [[ "$line" == *":in-progress" ]]; then
+            last="${line%:*}"
+        fi
+    done < "$PROGRESS_FILE"
+    echo "$last"
+}
+
+# ---------------------------------------------------------------------------
+# run_lesson "module" "lesson_basename"
+# Source the lesson file and call lesson_info() then lesson_run().
+# ---------------------------------------------------------------------------
+run_lesson() {
+    local module="$1"
+    local lesson="$2"
+    local lesson_file="$PROJECT_ROOT/lessons/$module/${lesson}.sh"
+
+    if [[ ! -f "$lesson_file" ]]; then
+        echo "Error: Lesson file not found: $lesson_file" >&2
+        return 1
+    fi
+
+    progress_mark_in_progress "$module/$lesson"
+
+    # shellcheck source=/dev/null
+    source "$lesson_file"
+
+    if declare -f lesson_info &>/dev/null; then
+        lesson_info
+    fi
+
+    if declare -f lesson_run &>/dev/null; then
+        lesson_run
+    fi
+
+    progress_mark_complete "$module/$lesson"
+}
+
+# ---------------------------------------------------------------------------
+# show_lesson_menu "module"
+# Display the list of lessons for a module and let the user choose one.
+# ---------------------------------------------------------------------------
+show_lesson_menu() {
+    local module="$1"
+    local -a lessons=()
+    local lesson
+    while IFS= read -r lesson; do
+        [[ -n "$lesson" ]] && lessons+=("$lesson")
+    done < <(discover_lessons "$module")
+
+    if [[ ${#lessons[@]} -eq 0 ]]; then
+        echo "No lessons found in module: $module"
+        return
+    fi
+
+    echo ""
+    echo "Module: $module"
+    echo "---"
+
+    local i
+    for (( i=0; i<${#lessons[@]}; i++ )); do
+        local l="${lessons[$i]}"
+        local status
+        status="$(progress_get_status "$module/$l")"
+        local marker=" "
+        [[ "$status" == "complete" ]]     && marker="✓"
+        [[ "$status" == "in-progress" ]]  && marker="»"
+        printf "  [%s] %d) %s\n" "$marker" $((i+1)) "$l"
+    done
+    echo "  $((${#lessons[@]}+1))) Back"
+    echo ""
+
+    local choice
+    while true; do
+        printf "Select a lesson: "
+        read -r choice
+        if [[ "$choice" =~ ^[0-9]+$ ]] && \
+           [[ "$choice" -ge 1 ]] && \
+           [[ "$choice" -le $(( ${#lessons[@]} + 1 )) ]]; then
+            break
+        fi
+        echo "Invalid selection. Enter a number between 1 and $(( ${#lessons[@]} + 1 ))."
+    done
+
+    if [[ "$choice" -eq $(( ${#lessons[@]} + 1 )) ]]; then
+        return  # Back
+    fi
+
+    run_lesson "$module" "${lessons[$((choice-1))]}"
+}
+
+# ---------------------------------------------------------------------------
+# main_menu
+# Show the interactive main menu loop.
+# ---------------------------------------------------------------------------
+main_menu() {
+    while true; do
+        clear 2>/dev/null || true
+        show_header
+        echo ""
+
+        local -a modules=()
+        local mod
+        while IFS= read -r mod; do
+            [[ -n "$mod" ]] && modules+=("$mod")
+        done < <(discover_modules)
+
+        if [[ ${#modules[@]} -eq 0 ]]; then
+            echo "No modules found in $PROJECT_ROOT/lessons/"
+            echo ""
+        else
+            echo "Modules:"
+            local i
+            for (( i=0; i<${#modules[@]}; i++ )); do
+                local m="${modules[$i]}"
+                local pct
+                pct="$(progress_module_percent "$m")"
+                local lock=""
+                if ! progress_module_unlocked "$m" 2>/dev/null; then
+                    lock=" [LOCKED]"
+                fi
+                printf "  %d) %s  (%d%%)%s\n" $((i+1)) "$m" "$pct" "$lock"
+            done
+            echo ""
+        fi
+
+        # Extra menu options
+        local extra_start=$(( ${#modules[@]} + 1 ))
+        echo "  $extra_start) Continue (resume last in-progress)"
+        echo "  $(( extra_start + 1 ))) Reset Progress"
+        echo "  $(( extra_start + 2 ))) Quit"
+        echo ""
+
+        local choice
+        local max_choice=$(( ${#modules[@]} + 3 ))
+        while true; do
+            printf "Select an option: "
+            read -r choice
+            if [[ "$choice" =~ ^[0-9]+$ ]] && \
+               [[ "$choice" -ge 1 ]] && \
+               [[ "$choice" -le "$max_choice" ]]; then
+                break
+            fi
+            echo "Invalid selection. Enter a number between 1 and $max_choice."
+        done
+
+        if [[ "$choice" -le ${#modules[@]} ]]; then
+            # Module selected
+            local selected_module="${modules[$((choice-1))]}"
+            if ! progress_module_unlocked "$selected_module"; then
+                echo ""
+                echo "This module is locked. Complete more of the previous module first."
+                echo "Press Enter to continue."
+                read -r
+            else
+                show_lesson_menu "$selected_module"
+            fi
+
+        elif [[ "$choice" -eq "$extra_start" ]]; then
+            # Continue
+            local last
+            last="$(find_last_in_progress)"
+            if [[ -z "$last" ]]; then
+                echo ""
+                echo "No lesson is currently in progress."
+                echo "Press Enter to continue."
+                read -r
+            else
+                local resume_module="${last%/*}"
+                local resume_lesson="${last#*/}"
+                run_lesson "$resume_module" "$resume_lesson"
+            fi
+
+        elif [[ "$choice" -eq $(( extra_start + 1 )) ]]; then
+            # Reset Progress
+            printf "Are you sure you want to reset all progress? [y/N] "
+            local confirm
+            read -r confirm
+            if [[ "${confirm,,}" == "y" ]]; then
+                progress_reset
+                echo "Progress reset."
+                sleep 1
+            fi
+
+        else
+            # Quit
+            echo ""
+            echo "Goodbye!"
+            exit 0
+        fi
+    done
+}
+
+# ---------------------------------------------------------------------------
+# cleanup — called on EXIT/INT/TERM
+# ---------------------------------------------------------------------------
+cleanup() {
+    # Kill sandbox if sandbox_kill is available (from lib/sandbox.sh)
+    if declare -f sandbox_kill &>/dev/null; then
+        sandbox_kill 2>/dev/null || true
+    fi
+}
+
+# ---------------------------------------------------------------------------
+# main
+# ---------------------------------------------------------------------------
+main() {
+    parse_args "$@"
+
+    check_prerequisites
+
+    # Source all libraries
+    # shellcheck source=lib/ui.sh
+    source "$PROJECT_ROOT/lib/ui.sh"
+    # shellcheck source=lib/nvim_helpers.sh
+    source "$PROJECT_ROOT/lib/nvim_helpers.sh"
+    # sandbox.sh may not exist yet — source only if present
+    if [[ -f "$PROJECT_ROOT/lib/sandbox.sh" ]]; then
+        # shellcheck source=lib/sandbox.sh
+        source "$PROJECT_ROOT/lib/sandbox.sh"
+    fi
+    # shellcheck source=lib/progress.sh
+    source "$PROJECT_ROOT/lib/progress.sh"
+
+    # Register cleanup trap
+    trap cleanup EXIT INT TERM
+
+    # First-run bootstrap
+    bootstrap_config
+
+    # Initialise progress tracking
+    progress_init
+
+    # Launch main menu
+    main_menu
+}
+
+# ---------------------------------------------------------------------------
+# Guard: only call main when executed directly, not when sourced (for tests)
+# ---------------------------------------------------------------------------
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main "$@"
+fi
