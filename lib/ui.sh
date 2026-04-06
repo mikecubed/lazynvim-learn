@@ -110,6 +110,9 @@ ui_typewriter() {
         if read -r -t 0 2>/dev/null; then
             # Consume the keypress without echoing
             read -r -s -n 1 _ui_tw_dummy 2>/dev/null || true
+            # Erase the newline the terminal may have added from the keypress:
+            # move up one line, to the current column, and clear to end of line
+            printf '\033[A\033[%dG\033[K' "$(( i + 1 ))"
             # Print the rest of the text at once
             printf '%s\n' "${text:$i}"
             return

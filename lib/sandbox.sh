@@ -34,13 +34,16 @@ sandbox_launch() {
     # NVIM_APPNAME is exported so the child process inherits it.
     # Try percentage split first; fall back to fixed lines if pane is small.
     SANDBOX_PANE=$(tmux split-window -v -p 65 -P -F '#{pane_id}' "$nvim_cmd" 2>/dev/null) \
-        || SANDBOX_PANE=$(tmux split-window -v -l 12 -P -F '#{pane_id}' "$nvim_cmd" 2>/dev/null) \
         || SANDBOX_PANE=$(tmux split-window -v -P -F '#{pane_id}' "$nvim_cmd" 2>/dev/null) \
         || {
             echo "Error: failed to create tmux pane for Neovim sandbox." >&2
             echo "       Try making your terminal window taller." >&2
             return 1
         }
+
+    # Resize: ensure the nvim pane gets at least 65% of the window.
+    # The tutorial pane (top) can work with fewer lines.
+    tmux resize-pane -t "$SANDBOX_PANE" -y 65% 2>/dev/null || true
 
     # Keep the pane open if nvim exits unexpectedly so the error is visible
     tmux set-option -t "$SANDBOX_PANE" remain-on-exit on 2>/dev/null || true
