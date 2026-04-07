@@ -26,7 +26,22 @@ verify_gd_jumped() {
 
 # Exercise 3: the symbol "add_tag" was renamed to "attach_tag"
 verify_rename_add_tag() {
-    verify_via_companion "symbol_renamed" "'add_tag','attach_tag'"
+    verify_reset
+    # Check buffer content directly — avoid luaeval quoting issues
+    if verify_buffer_contains "attach_tag"; then
+        if verify_buffer_not_contains "add_tag"; then
+            VERIFY_MESSAGE="Symbol renamed to 'attach_tag'"
+            return 0
+        else
+            VERIFY_MESSAGE="'add_tag' still found in buffer — make sure all occurrences were renamed"
+            VERIFY_HINT="Place cursor on 'add_tag', press Space c r, type 'attach_tag', press Enter"
+            return 1
+        fi
+    else
+        VERIFY_MESSAGE="'attach_tag' not found in buffer"
+        VERIFY_HINT="Place cursor on 'add_tag', press Space c r, type 'attach_tag', press Enter"
+        return 1
+    fi
 }
 
 # ---------------------------------------------------------------------------

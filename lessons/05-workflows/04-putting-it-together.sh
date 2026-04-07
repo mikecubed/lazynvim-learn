@@ -22,7 +22,21 @@ verify_capstone_file_open() {
 # Check 2: the function that was originally named "add_tag" no longer exists
 # in the buffer — it has been renamed to "attach_tag" via LSP rename (<leader>cr).
 verify_capstone_symbol_renamed() {
-    verify_via_companion "symbol_renamed" '"add_tag"' '"attach_tag"'
+    verify_reset
+    if verify_buffer_contains "attach_tag"; then
+        if verify_buffer_not_contains "add_tag"; then
+            VERIFY_MESSAGE="Symbol renamed to 'attach_tag'"
+            return 0
+        else
+            VERIFY_MESSAGE="'add_tag' still found in buffer"
+            VERIFY_HINT="Place cursor on 'add_tag', press Space c r, type 'attach_tag', press Enter"
+            return 1
+        fi
+    else
+        VERIFY_MESSAGE="'attach_tag' not found in buffer"
+        VERIFY_HINT="Place cursor on 'add_tag', press Space c r, type 'attach_tag', press Enter"
+        return 1
+    fi
 }
 
 # Check 3: the buffer has been formatted — conform.nvim was invoked.
