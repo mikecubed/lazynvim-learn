@@ -142,8 +142,50 @@ panel update with each step."
     engine_pause
 
     # -----------------------------------------------------------------------
-    engine_section "Quizzes"
+    engine_section "Exercises"
     # -----------------------------------------------------------------------
+
+    # Check if DAP is available in the sandbox
+    local dap_available=0
+    if sandbox_is_alive 2>/dev/null; then
+        local dap_check
+        dap_check=$(nvim_lua "tostring(pcall(require, \"dap\"))")
+        [[ "$dap_check" == "true" ]] && dap_available=1
+    fi
+
+    if [[ $dap_available -eq 1 ]]; then
+        engine_teach "DAP is available in this sandbox. Let's try setting a breakpoint."
+
+        engine_nvim_open "sample.py"
+
+        engine_exercise "dap-set-breakpoint" \
+            "Set a breakpoint on line 17 of sample.py" \
+            "Navigate to line 17 (try '17G') and press <leader>db to toggle a breakpoint. A gutter marker should appear. Type 'check' when done." \
+            verify_breakpoint_on_line_17 \
+            "Press '17G' to jump to line 17, then press Space d b to set a breakpoint." \
+            "file" \
+            "sample.py"
+
+        [[ $_ENGINE_QUIT -eq 1 ]] && return
+    else
+        engine_teach "DAP is not installed in this sandbox. To enable it in your own config:
+
+  1. Add this line to your lua/config/lazy.lua spec:
+     { import = \"lazyvim.plugins.extras.dap.core\" }
+
+  2. For Python debugging, also add:
+     { import = \"lazyvim.plugins.extras.dap.nlua\" }
+
+  3. Install debugpy via Mason:
+     :MasonInstall debugpy
+
+  4. Restart Neovim and run :Lazy sync
+
+Once set up, <leader>db will set breakpoints and <leader>dc will
+start a debug session. Skipping the hands-on exercise for now."
+
+        engine_pause
+    fi
 
     engine_quiz "Which keybinding sets a breakpoint on the current line?" \
         "<leader>dc" \
@@ -157,13 +199,6 @@ panel update with each step."
         "<leader>do (step over)" \
         "<leader>dO (step out)" \
         2
-
-    engine_quiz "How do you enable DAP in LazyVim?" \
-        "It is built-in, no setup needed" \
-        "Install nvim-dap manually with :Lazy" \
-        "Enable the dap LazyVim Extra in your config" \
-        "Run :DAP install" \
-        3
 
     # -----------------------------------------------------------------------
     engine_section "Summary"
