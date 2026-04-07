@@ -53,9 +53,19 @@ sandbox_launch() {
     tmux set-option -t "$SANDBOX_PANE" remain-on-exit on 2>/dev/null || true
 
     # Wait for nvim to be ready with a progress indicator
-    printf "Waiting for Neovim..."
+    printf "Waiting for Neovim (socket: %s)...\n" "$NVIM_SOCKET"
     local i=0 max=120  # 60 seconds at 0.5s intervals
-    while ! nvim_is_running; do
+    while true; do
+        # Check if socket file exists yet
+        if [[ -S "$NVIM_SOCKET" ]]; then
+            # Socket exists, try to connect
+            local result
+            result=$(nvim --server "$NVIM_SOCKET" --remote-expr "1+1" 2>&1)
+            if [[ "$result" == "2" ]]; then
+                printf "Connected!\n"
+                return 0
+            fi
+        fi
         sleep 0.5
         i=$(( i + 1 ))
         printf "."
@@ -63,12 +73,16 @@ sandbox_launch() {
             printf " timeout!\n"
             echo "Error: Neovim did not respond within 60 seconds." >&2
             echo "       Socket: $NVIM_SOCKET" >&2
-            echo "       Check the Neovim pane for errors." >&2
+            if [[ -S "$NVIM_SOCKET" ]]; then
+                echo "       Socket file exists but connection refused." >&2
+                echo "       Neovim may still be loading plugins." >&2
+            else
+                echo "       Socket file does not exist." >&2
+                echo "       Neovim may have failed to start." >&2
+            fi
             return 1
         fi
     done
-    printf " ready!\n"
-    return 0
 }
 
 # ---------------------------------------------------------------------------
