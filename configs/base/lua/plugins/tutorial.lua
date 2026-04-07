@@ -17,6 +17,6 @@ return {
 
   -- Disable automatic installs that block startup and RPC
   { "nvim-treesitter/nvim-treesitter", opts = { auto_install = false } },
-  { "williamboman/mason.nvim", opts = { auto_install = false } },
-  { "williamboman/mason-lspconfig.nvim", opts = { automatic_installation = false } },
+  { "mason-org/mason.nvim", opts = { auto_install = false } },
+  { "mason-org/mason-lspconfig.nvim", opts = { automatic_installation = false } },
 }

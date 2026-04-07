@@ -14,7 +14,18 @@ lesson_info() {
 # ---------------------------------------------------------------------------
 
 verify_lazy_dashboard_open() {
-    verify_filetype_visible "lazy"
+    verify_reset
+    # Check for the lazy.nvim UI — could be filetype "lazy" or buffer name containing "lazy"
+    local result
+    result=$(nvim_lua "vim.iter(vim.api.nvim_list_wins()):any(function(w) local b=vim.api.nvim_win_get_buf(w) local ft=vim.bo[b].filetype local name=vim.api.nvim_buf_get_name(b) return ft=='lazy' or name:lower():find('lazy') ~= nil end)")
+    if [[ "$result" == "true" ]]; then
+        VERIFY_MESSAGE="The lazy.nvim dashboard is open!"
+        return 0
+    else
+        VERIFY_MESSAGE="No window with filetype 'lazy' found"
+        VERIFY_HINT="Type :Lazy (capital L) and press Enter"
+        return 1
+    fi
 }
 
 # ---------------------------------------------------------------------------
@@ -150,7 +161,7 @@ Press 'q' inside the dashboard to close it when you are done exploring."
         "Type :Lazy and press Enter to open the lazy.nvim plugin manager. The dashboard will appear in a floating window. Explore for a moment, then press 'check'." \
         verify_lazy_dashboard_open \
         "In Normal mode, type a colon then: Lazy — and press Enter." \
-        "none"
+        "empty"
 
     [[ $_ENGINE_QUIT -eq 1 ]] && return
 
