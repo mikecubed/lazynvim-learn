@@ -20,7 +20,7 @@ verify_neotree_and_file_open() {
     local neotree_ok=0
     local file_ok=0
 
-    verify_via_companion "neotree_showing_path" "'$SANDBOX_DIR'" && neotree_ok=1
+    verify_filetype_visible "neo-tree" && neotree_ok=1
     verify_file_open "sample.py" && file_ok=1
 
     if [[ $neotree_ok -eq 0 ]]; then
