@@ -13,18 +13,18 @@ lesson_info() {
 # Custom verifiers
 # ---------------------------------------------------------------------------
 
-# Check that <leader>wq exists — which-key intercepts leader maps so we
-# need to search through vim.api.nvim_get_keymap which sees all layers.
-verify_leader_wq_exists() {
+# Check that <leader>wd exists (delete window — a standard LazyVim mapping).
+# which-key intercepts leader maps so we search through nvim_get_keymap.
+verify_leader_wd_exists() {
     verify_reset
     local result
-    result=$(nvim_lua "vim.iter(vim.api.nvim_get_keymap(\"n\")):any(function(m) return m.lhs == \" wq\" end)")
+    result=$(nvim_lua "vim.iter(vim.api.nvim_get_keymap(\"n\")):any(function(m) return m.lhs == \" wd\" end)")
     if [[ "$result" == "true" ]]; then
-        VERIFY_MESSAGE="Keymap <leader>wq exists"
+        VERIFY_MESSAGE="Keymap <leader>wd exists"
         return 0
     else
-        VERIFY_MESSAGE="Keymap <leader>wq not found"
-        VERIFY_HINT="This mapping should exist by default in LazyVim. Try :nmap <Space>wq"
+        VERIFY_MESSAGE="Keymap <leader>wd not found"
+        VERIFY_HINT="This mapping should exist by default in LazyVim. Try :nmap <Space>wd"
         return 1
     fi
 }
@@ -246,43 +246,38 @@ all mappings — just type a word from the description and it narrows instantly.
         2
 
     # -----------------------------------------------------------------------
-    engine_section "Exercise: Verify a LazyVim Keymap Exists"
+    engine_section "Discovering Keymaps with Which-Key"
     # -----------------------------------------------------------------------
 
-    engine_teach "LazyVim maps <leader>wq to close the current window. Let's confirm that
-keymap is registered in this sandbox Neovim instance.
+    engine_teach "LazyVim uses which-key to show available keymaps as you type. Try it
+in the Neovim pane:
 
-Press <leader>? (Space ?) to open the which-key cheat sheet. Navigate to the
-'w' group (windows) and look for 'wq'. Then come back and press 'check' —
-the check queries Neovim directly to confirm the keymap is present."
+  1. Press Space and wait — which-key shows all <leader> keymaps.
+  2. Look at the 'w' group (windows) — you will see mappings like
+     wd (delete window), wm (maximize), etc.
+  3. Press Escape to close the popup.
 
-    engine_exercise "check-leader-wq" \
-        "Confirm <leader>wq is Mapped" \
-        "Explore <leader>wq with which-key (<leader>?) or :nmap <leader>wq. The check verifies the keymap exists. Press 'check' when ready." \
-        verify_leader_wq_exists \
-        "Press Space ? to open which-key help, or run :nmap <leader>wq to inspect the mapping." \
-        "empty"
+This is the fastest way to discover what keymaps are available."
 
-    [[ $_ENGINE_QUIT -eq 1 ]] && return
+    engine_pause
 
-    # -----------------------------------------------------------------------
-    engine_section "Exercise: Verify the jk Escape Map"
-    # -----------------------------------------------------------------------
+    engine_teach "Let's test your discovery skills."
 
-    engine_teach "LazyVim maps 'jk' in Insert mode to return to Normal mode — a popular
-alternative to reaching for Escape. Let's verify that insert-mode mapping
-is active.
+    engine_quiz \
+        "What does <leader>wd do in LazyVim?" \
+        "Delete word" \
+        "Delete window" \
+        "Download file" \
+        "Debug watch" \
+        2
 
-Press 'check' to confirm it exists."
-
-    engine_exercise "check-jk-escape" \
-        "Confirm jk Insert-mode Escape is Mapped" \
-        "The check verifies that 'jk' is mapped in Insert mode. Press 'check' — no action required in Neovim." \
-        verify_escape_to_normal \
-        "This should pass automatically — jk is a LazyVim default. If it fails, run :imap jk to inspect." \
-        "empty"
-
-    [[ $_ENGINE_QUIT -eq 1 ]] && return
+    engine_quiz \
+        "How can you return to Normal mode from Insert mode without pressing Escape? (LazyVim shortcut)" \
+        "Type qq" \
+        "Type jk" \
+        "Press Ctrl-c" \
+        "Press Ctrl-n" \
+        2
 
     # -----------------------------------------------------------------------
     engine_section "Summary"
