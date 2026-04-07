@@ -168,21 +168,16 @@ panel update with each step."
 
         [[ $_ENGINE_QUIT -eq 1 ]] && return
     else
-        engine_teach "DAP is not installed in this sandbox. To enable it in your own config:
+        engine_teach "DAP is not available in this session (plugins may still be installing).
+To enable debugging in your own Neovim config:
 
-  1. Add this line to your lua/config/lazy.lua spec:
-     { import = \"lazyvim.plugins.extras.dap.core\" }
+  1. Run :LazyExtras and enable 'dap.core'
+  2. Run :MasonInstall debugpy  (for Python debugging)
+  3. Restart Neovim
 
-  2. For Python debugging, also add:
-     { import = \"lazyvim.plugins.extras.dap.nlua\" }
-
-  3. Install debugpy via Mason:
-     :MasonInstall debugpy
-
-  4. Restart Neovim and run :Lazy sync
-
-Once set up, <leader>db will set breakpoints and <leader>dc will
-start a debug session. Skipping the hands-on exercise for now."
+Try running ./lazynvim-learn --reset-config to reinstall the
+sandbox, then come back to this lesson. Skipping the hands-on
+exercise for now."
 
         engine_pause
     fi

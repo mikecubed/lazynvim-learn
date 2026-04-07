@@ -29,6 +29,7 @@ return {
         "ruff",
         "pyright",
         "lua-language-server",
+        "debugpy",
       })
     end,
   },
