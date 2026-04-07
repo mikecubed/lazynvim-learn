@@ -54,14 +54,26 @@ sandbox_launch() {
 
     # Wait for nvim to be ready with a progress indicator
     printf "Waiting for Neovim (socket: %s)...\n" "$NVIM_SOCKET"
+
+    # Give nvim a moment to create the socket
+    sleep 2
+
+    # Debug: one-time diagnostic dump
+    printf "[debug] socket exists: "
+    [[ -S "$NVIM_SOCKET" ]] && echo "yes" || echo "NO"
+    printf "[debug] nvim binary: %s\n" "$(which nvim 2>/dev/null)"
+    printf "[debug] test connection: "
+    local _dbg
+    _dbg=$(nvim --server "$NVIM_SOCKET" --remote-expr "1+1" 2>&1)
+    printf "'%s' (exit %d)\n" "$_dbg" "$?"
+
     local i=0 max=120  # 60 seconds at 0.5s intervals
     while true; do
         # Check if socket file exists yet
         if [[ -S "$NVIM_SOCKET" ]]; then
-            # Socket exists, try to connect.
-            # Unset NVIM to avoid client-mode confusion if running inside nvim.
+            # Socket exists, try to connect
             local result
-            result=$(NVIM= nvim --server "$NVIM_SOCKET" --remote-expr "1+1" 2>/dev/null)
+            result=$(nvim --server "$NVIM_SOCKET" --remote-expr "1+1" 2>/dev/null)
             if [[ "$result" == "2" ]]; then
                 printf "Connected!\n"
                 return 0
