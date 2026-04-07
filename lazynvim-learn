@@ -270,6 +270,9 @@ run_lesson() {
         lesson_run || true
     fi
 
+    # Close the sandbox pane now that the lesson is done
+    sandbox_kill 2>/dev/null || true
+
     progress_mark_complete "$module/$lesson"
 
     # Show the completion screen after the final capstone lesson
