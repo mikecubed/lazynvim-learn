@@ -241,7 +241,11 @@ discover_modules() {
     find "$lessons_dir" -mindepth 1 -maxdepth 1 -type d -print0 2>/dev/null \
         | sort -z \
         | while IFS= read -r -d '' dir; do
-            basename "$dir"
+            local name
+            name="$(basename "$dir")"
+            # Skip the refresher module — it's accessed via the menu, not as a regular module
+            [[ "$name" == "06-refresher" ]] && continue
+            echo "$name"
         done
 }
 
@@ -448,13 +452,14 @@ main_menu() {
 
         # Extra menu options
         local extra_start=$(( ${#modules[@]} + 1 ))
-        echo "  $extra_start) Continue (resume last in-progress)"
-        echo "  $(( extra_start + 1 ))) Reset Progress"
-        echo "  $(( extra_start + 2 ))) Quit"
+        echo "  $extra_start) Quick Refresher (5-min drill)"
+        echo "  $(( extra_start + 1 ))) Continue (resume last in-progress)"
+        echo "  $(( extra_start + 2 ))) Reset Progress"
+        echo "  $(( extra_start + 3 ))) Quit"
         echo ""
 
         local choice
-        local max_choice=$(( ${#modules[@]} + 3 ))
+        local max_choice=$(( ${#modules[@]} + 4 ))
         while true; do
             printf "Select an option: "
             read -r choice
@@ -479,6 +484,10 @@ main_menu() {
             fi
 
         elif [[ "$choice" -eq "$extra_start" ]]; then
+            # Quick Refresher — always available, not gated
+            run_lesson "06-refresher" "01-quick-refresher"
+
+        elif [[ "$choice" -eq $(( extra_start + 1 )) ]]; then
             # Continue
             local last
             last="$(find_last_in_progress)"
@@ -493,7 +502,7 @@ main_menu() {
                 run_lesson "$resume_module" "$resume_lesson"
             fi
 
-        elif [[ "$choice" -eq $(( extra_start + 1 )) ]]; then
+        elif [[ "$choice" -eq $(( extra_start + 2 )) ]]; then
             # Reset Progress
             printf "Are you sure you want to reset all progress? [y/N] "
             local confirm
