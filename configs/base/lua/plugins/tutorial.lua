@@ -19,4 +19,17 @@ return {
   { "nvim-treesitter/nvim-treesitter", opts = { auto_install = false } },
   { "mason-org/mason.nvim", opts = { auto_install = false } },
   { "mason-org/mason-lspconfig.nvim", opts = { automatic_installation = false } },
+
+  -- Ensure tutorial-required tools are installed via Mason
+  {
+    "mason-org/mason.nvim",
+    opts = function(_, opts)
+      opts.ensure_installed = opts.ensure_installed or {}
+      vim.list_extend(opts.ensure_installed, {
+        "ruff",        -- Python formatter/linter
+        "pyright",     -- Python LSP
+        "lua-language-server",
+      })
+    end,
+  },
 }

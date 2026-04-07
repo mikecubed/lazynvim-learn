@@ -171,6 +171,9 @@ bootstrap_config() {
             echo "Warning: Plugin sync may not have completed successfully."
             echo "         Neovim will attempt to install plugins on first launch."
         fi
+
+        echo "Installing required tools (ruff, pyright, lua-language-server) ..."
+        nvim --headless -c 'lua require("mason-registry").refresh()' -c 'MasonInstall ruff pyright lua-language-server' -c 'qa' 2>&1 || true
         echo "Bootstrap complete."
     fi
 }
