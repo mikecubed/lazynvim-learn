@@ -32,14 +32,14 @@ sandbox_launch() {
     [[ -n "$file" ]] && nvim_cmd="$nvim_cmd $(printf '%q' "$file")"
 
     # Build tmux split args — set starting directory if provided
-    local -a tmux_args=(-v -P -F '#{pane_id}')
+    local -a tmux_args=(-h -P -F '#{pane_id}')
     [[ -n "$cwd" ]] && tmux_args+=(-c "$cwd")
 
     # Split the tmux window horizontally (side by side).
     # Tutorial stays on the left, nvim opens on the right.
     # NVIM_APPNAME is exported so the child process inherits it.
-    SANDBOX_PANE=$(tmux split-window "${tmux_args[@]}" -h -p 55 "$nvim_cmd" 2>/dev/null) \
-        || SANDBOX_PANE=$(tmux split-window "${tmux_args[@]}" -h "$nvim_cmd" 2>/dev/null) \
+    SANDBOX_PANE=$(tmux split-window "${tmux_args[@]}" -p 55 "$nvim_cmd" 2>/dev/null) \
+        || SANDBOX_PANE=$(tmux split-window "${tmux_args[@]}" "$nvim_cmd" 2>/dev/null) \
         || {
             echo "Error: failed to create tmux pane for Neovim sandbox." >&2
             echo "       Try making your terminal window wider." >&2
@@ -52,17 +52,22 @@ sandbox_launch() {
     # Keep the pane open if nvim exits unexpectedly so the error is visible
     tmux set-option -t "$SANDBOX_PANE" remain-on-exit on 2>/dev/null || true
 
-    # Wait for nvim to be ready. Use a generous timeout on first launch
-    # since LazyVim may need to install plugins.
-    if ! nvim_wait_ready 30; then
-        echo "Warning: Neovim is slow to start (plugin install may be in progress)." >&2
-        echo "         Waiting a bit longer..." >&2
-        nvim_wait_ready 60 || {
-            echo "Error: Neovim did not respond within 90 seconds." >&2
-            echo "         Check the bottom pane for errors." >&2
+    # Wait for nvim to be ready with a progress indicator
+    printf "Waiting for Neovim..."
+    local i=0 max=120  # 60 seconds at 0.5s intervals
+    while ! nvim_is_running; do
+        sleep 0.5
+        i=$(( i + 1 ))
+        printf "."
+        if [[ $i -ge $max ]]; then
+            printf " timeout!\n"
+            echo "Error: Neovim did not respond within 60 seconds." >&2
+            echo "       Socket: $NVIM_SOCKET" >&2
+            echo "       Check the Neovim pane for errors." >&2
             return 1
-        }
-    fi
+        fi
+    done
+    printf " ready!\n"
     return 0
 }
 
