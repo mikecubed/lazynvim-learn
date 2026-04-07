@@ -20,7 +20,8 @@ verify_neotree_and_file_open() {
     local neotree_ok=0
     local file_ok=0
 
-    verify_filetype_visible "neo-tree" && neotree_ok=1
+    # LazyVim may use neo-tree or snacks.nvim as the file explorer
+    { verify_filetype_visible "neo-tree" || verify_filetype_visible "snacks_picker_list" || verify_filetype_visible "snacks_layout_box"; } && neotree_ok=1
     verify_file_open "sample.py" && file_ok=1
 
     if [[ $neotree_ok -eq 0 ]]; then
