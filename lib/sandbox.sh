@@ -58,9 +58,10 @@ sandbox_launch() {
     while true; do
         # Check if socket file exists yet
         if [[ -S "$NVIM_SOCKET" ]]; then
-            # Socket exists, try to connect
+            # Socket exists, try to connect.
+            # Unset NVIM to avoid client-mode confusion if running inside nvim.
             local result
-            result=$(nvim --server "$NVIM_SOCKET" --remote-expr "1+1" 2>&1)
+            result=$(NVIM= nvim --server "$NVIM_SOCKET" --remote-expr "1+1" 2>/dev/null)
             if [[ "$result" == "2" ]]; then
                 printf "Connected!\n"
                 return 0

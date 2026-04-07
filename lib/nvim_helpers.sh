@@ -8,10 +8,13 @@ NVIM_SOCKET=""
 # Low-level RPC wrappers
 # ---------------------------------------------------------------------------
 
+# All nvim --server calls unset NVIM to prevent client-mode confusion
+# when the tutorial itself runs inside an nvim terminal (e.g. Claude Code).
+
 # nvim_eval "vimscript_expr"
 # Evaluate a Vimscript expression; print stdout; return 1 on failure.
 nvim_eval() {
-    nvim --server "$NVIM_SOCKET" --remote-expr "$1" 2>/dev/null
+    NVIM= nvim --server "$NVIM_SOCKET" --remote-expr "$1" 2>/dev/null
     local rc=$?
     [[ $rc -eq 0 ]] && return 0 || return 1
 }
@@ -27,13 +30,13 @@ nvim_lua() {
 # nvim_exec "vim_command"
 # Execute a Normal-mode Ex command inside Neovim (no output returned).
 nvim_exec() {
-    nvim --server "$NVIM_SOCKET" --remote-send "<Cmd>$1<CR>" 2>/dev/null
+    NVIM= nvim --server "$NVIM_SOCKET" --remote-send "<Cmd>$1<CR>" 2>/dev/null
 }
 
 # nvim_send_keys "keys"
 # Send raw keystrokes to Neovim (supports special notation like <Esc>).
 nvim_send_keys() {
-    nvim --server "$NVIM_SOCKET" --remote-send "$1" 2>/dev/null
+    NVIM= nvim --server "$NVIM_SOCKET" --remote-send "$1" 2>/dev/null
 }
 
 # ---------------------------------------------------------------------------
