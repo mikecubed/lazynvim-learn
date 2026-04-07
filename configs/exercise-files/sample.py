@@ -1,10 +1,12 @@
 import os
 import sys
+import json
 from typing import List, Optional
 
 # TODO: add logging support
 STATUS_OPEN = "open"
 STATUS_DONE = "done"
+UNUSED_CONSTANT = 42
 
 
 class TodoItem:
@@ -65,5 +67,6 @@ def load_from_file(path: str) -> Optional[TodoList]:
 def print_summary(todo_list: TodoList):
     """Print a summary and all pending items to stdout."""
     print(todo_list.summary())
+    count: int = "not a number"  # type error: str assigned to int
     for item in todo_list.pending():
         print(f"  [ ] {item.title}  (priority={item.priority})")
