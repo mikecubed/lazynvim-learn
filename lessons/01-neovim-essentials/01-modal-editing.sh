@@ -204,7 +204,7 @@ one line with Visual mode and delete it."
         "Use 'V' (capital V) to select the current line in Visual mode, then press 'd' to delete it. The buffer should have fewer than 3 lines when you're done." \
         verify_line_deleted \
         "Move to any line, press 'V' to select it, then press 'd' to delete it." \
-        "empty"
+        "current"
 
     # -----------------------------------------------------------------------
     engine_section "Summary"
