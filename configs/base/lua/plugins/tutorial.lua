@@ -14,4 +14,9 @@ return {
   { "nvimdev/dashboard-nvim", enabled = false },
   { "goolord/alpha-nvim", enabled = false },
   { "folke/snacks.nvim", opts = { dashboard = { enabled = false } } },
+
+  -- Disable automatic installs that block startup and RPC
+  { "nvim-treesitter/nvim-treesitter", opts = { auto_install = false } },
+  { "williamboman/mason.nvim", opts = { auto_install = false } },
+  { "williamboman/mason-lspconfig.nvim", opts = { automatic_installation = false } },
 }
