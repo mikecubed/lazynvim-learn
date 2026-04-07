@@ -139,13 +139,13 @@ Take your time. Use which-key (<leader>) if you forget a binding."
     # -----------------------------------------------------------------------
 
     engine_teach "
-  ╔══════════════════════════════════════════════════════════════════╗
-  ║                                                                  ║
-  ║         C O N G R A T U L A T I O N S                           ║
-  ║                                                                  ║
-  ║   You have completed the lazynvim-learn tutorial.                ║
-  ║                                                                  ║
-  ╚══════════════════════════════════════════════════════════════════╝
+  ╔════════════════════════════════════════════════════╗
+  ║                                                    ║
+  ║       C O N G R A T U L A T I O N S                ║
+  ║                                                    ║
+  ║   You have completed the lazynvim-learn tutorial.  ║
+  ║                                                    ║
+  ╚════════════════════════════════════════════════════╝
 
 You started with the basics of modal editing and worked your way through:
 
