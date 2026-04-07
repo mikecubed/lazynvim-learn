@@ -1,30 +1,28 @@
 local M = {}
 
--- Check if Telescope is currently open
+-- Check if a picker or Telescope is currently open
 function M.telescope_is_open()
-  local ok, _ = pcall(require, "telescope.actions.state")
-  if not ok then return "fail:Telescope not available" end
-
   for _, win in ipairs(vim.api.nvim_list_wins()) do
     local buf = vim.api.nvim_win_get_buf(win)
     local ft = vim.api.nvim_get_option_value("filetype", { buf = buf })
-    if ft == "TelescopePrompt" then
-      return "pass:Telescope is open"
+    if ft == "snacks_picker_input" or ft == "snacks_picker_list"
+        or ft == "TelescopePrompt" then
+      return "pass:Picker is open"
     end
   end
-  return "fail:Telescope is not open:Open it with <leader>ff"
+  return "fail:Picker is not open:Open it with <leader>ff"
 end
 
--- Check if Neo-tree is open and showing a specific path
+-- Check if the file explorer is open and showing a specific path
 function M.neotree_showing_path(path)
   for _, win in ipairs(vim.api.nvim_list_wins()) do
     local buf = vim.api.nvim_win_get_buf(win)
     local ft = vim.api.nvim_get_option_value("filetype", { buf = buf })
-    if ft == "neo-tree" then
-      return "pass:Neo-tree is open"
+    if ft == "snacks_explorer" or ft == "neo-tree" then
+      return "pass:File explorer is open"
     end
   end
-  return "fail:Neo-tree is not open:Toggle it with <leader>e"
+  return "fail:File explorer is not open:Toggle it with <leader>e"
 end
 
 -- Check if a breakpoint is set on a specific line

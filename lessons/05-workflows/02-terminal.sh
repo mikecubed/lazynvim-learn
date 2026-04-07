@@ -14,7 +14,7 @@ lesson_info() {
 # ---------------------------------------------------------------------------
 
 # Pass when any window is showing a terminal-mode buffer.
-# LazyVim uses toggleterm; filetype is "toggleterm" for managed terminals.
+# LazyVim uses snacks.nvim terminal; filetype is "snacks_terminal" for managed terminals.
 # Fallback: check for any buffer in terminal mode (filetype "terminal" or
 # the buffer name starting with "term://").
 verify_terminal_open() {
@@ -45,7 +45,7 @@ lesson_run() {
     # -----------------------------------------------------------------------
 
     engine_teach "Neovim has a built-in terminal emulator. LazyVim enhances it with the
-toggleterm plugin, which gives you floating terminals, split terminals, and
+snacks.nvim terminal, which gives you floating terminals, split terminals, and
 persistent sessions — all managed with keyboard shortcuts.
 
 The benefit: you can run a build command, check output, and jump straight back
@@ -119,7 +119,7 @@ you can check on them without interrupting them."
     engine_section "Multiple Terminal Instances"
     # -----------------------------------------------------------------------
 
-    engine_teach "Toggleterm supports numbered terminal instances. You can have several
+    engine_teach "Snacks terminal supports numbered instances. You can have several
 shells open simultaneously and switch between them:"
 
     engine_show_key "1 Space" "ft" "Open or focus terminal #1"

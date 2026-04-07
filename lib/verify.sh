@@ -429,7 +429,7 @@ verify_filetype_visible() {
 # ---------------------------------------------------------------------------
 
 # verify_file_exists_on_disk "filepath"
-# Check that a file exists on the real filesystem (for Neo-tree create exercises).
+# Check that a file exists on the real filesystem (for file create exercises).
 verify_file_exists_on_disk() {
     local filepath="$1"
     verify_reset

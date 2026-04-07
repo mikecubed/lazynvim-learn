@@ -78,7 +78,7 @@ in real work."
 
     engine_teach "Here is a quick reference of the skills you have built:"
 
-    engine_show_key "Space" "ff"  "Find file with Telescope (Module 2)"
+    engine_show_key "Space" "ff"  "Find file (Module 2)"
     engine_show_key "Space" "/"   "Live grep across the project (Module 2)"
     engine_show_key "Space" "e"   "Toggle file explorer (Module 2)"
     engine_show_key ""      "gd"  "Go to definition (Module 3 / LSP)"
@@ -150,7 +150,7 @@ Take your time. Use which-key (<leader>) if you forget a binding."
 You started with the basics of modal editing and worked your way through:
 
   Module 1  — Normal, Insert, Visual, and Command-line modes
-  Module 2  — Telescope, the file explorer, Flash, and Which-key
+  Module 2  — the fuzzy finder, the file explorer, Flash, and Which-key
   Module 3  — LSP, diagnostics, formatting, and refactoring
   Module 4  — LazyVim configuration and plugin customization
   Module 5  — Git (lazygit), terminal, and DAP debugging

@@ -210,13 +210,13 @@ trick inside the spec is cleaner because it is collocated with the plugin."
   :nmap         — Normal mode only
   :imap         — Insert mode only
   :vmap         — Visual mode only
-  <leader>sk    — Telescope keymap picker (search by description or key)
+  <leader>sk    — keymap picker (search by description or key)
   <leader>?     — which-key cheat sheet for the current mode
 
-The Telescope keymap picker (<leader>sk) is the fastest way to explore
+The keymap picker (<leader>sk) is the fastest way to explore
 all mappings — just type a word from the description and it narrows instantly."
 
-    engine_show_key "Space" "sk" "Search all keymaps (Telescope)"
+    engine_show_key "Space" "sk" "Search all keymaps"
     engine_show_key "Space" "?" "which-key cheat sheet"
 
     engine_pause
@@ -257,7 +257,7 @@ available <leader> keymaps organized by group:
   f — find/files (ff = find file, fg = live grep, ...)
   g — git (gg = lazygit, gb = blame, ...)
   c — code (cr = rename, cf = format, ...)
-  s — search (more Telescope pickers)
+  s — search (search pickers)
 
 Pressing any prefix key (like g, ], [) also triggers which-key after a
 short delay, showing what follows. This is the fastest way to discover
@@ -295,7 +295,7 @@ keymaps without memorizing them."
   • Plugin-triggering keymaps go in the keys field of the plugin spec
   • Override LazyVim maps by calling vim.keymap.set with the same lhs
   • Disable a map with false in a plugin spec's keys table
-  • Explore all maps with <leader>sk (Telescope) or <leader>?
+  • Explore all maps with <leader>sk or <leader>?
 
 Next up: vim.opt settings and autocommands — tuning editor behaviour and
 reacting to events."

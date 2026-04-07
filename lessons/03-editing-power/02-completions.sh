@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # lessons/03-editing-power/02-completions.sh
-# Module 3, Lesson 2: Completions with nvim-cmp
+# Module 3, Lesson 2: Completions with blink.cmp
 
 lesson_info() {
     LESSON_TITLE="Completions"
     LESSON_MODULE="03-editing-power"
-    LESSON_DESCRIPTION="Master nvim-cmp to get intelligent completions from the LSP, buffer, snippets, and file paths."
+    LESSON_DESCRIPTION="Master blink.cmp to get intelligent completions from the LSP, buffer, snippets, and file paths."
     LESSON_TIME="12 minutes"
 }
 
@@ -25,17 +25,18 @@ verify_completion_used() {
 
 lesson_run() {
     # -----------------------------------------------------------------------
-    engine_section "How nvim-cmp Works"
+    engine_section "How blink.cmp Works"
     # -----------------------------------------------------------------------
 
-    engine_teach "nvim-cmp is LazyVim's completion engine. It sits between your keystrokes
-and several *sources* — the LSP, the current buffer's words, file paths, Lua
-paths, and snippet engines — and merges them into a single ranked list.
+    engine_teach "blink.cmp is LazyVim's completion engine (the default on Neovim 0.10+).
+It sits between your keystrokes and several *sources* — the LSP, the current
+buffer's words, file paths, and the native snippet engine — and merges them
+into a single ranked list.
 
 The completion menu appears automatically after a short delay as you type.
 You can also trigger it manually at any time with Ctrl-Space."
 
-    engine_teach "nvim-cmp is separate from the LSP. Even with no language server running
+    engine_teach "blink.cmp is separate from the LSP. Even with no language server running
 you still get completions from:
 
   buffer   — every word currently visible across open buffers
@@ -79,8 +80,9 @@ The tiny icon on the left of each entry tells you its source:
     # -----------------------------------------------------------------------
 
     engine_teach "Some completions expand into *snippets* — multi-part templates with
-placeholders you fill in one by one. LazyVim uses LuaSnip as the snippet
-engine with a library of built-in snippets for common patterns.
+placeholders you fill in one by one. LazyVim uses Neovim's built-in
+vim.snippet API as the snippet engine, with friendly-snippets providing a
+large library of ready-made snippets for common patterns.
 
 After confirming a snippet, Tab moves forward to the next placeholder and
 Shift-Tab moves backward. When there are no placeholders left, Tab behaves
@@ -93,8 +95,8 @@ normally again."
   class — expands to a class with __init__
   for   — a for-loop skeleton
 
-You can also install friendly-snippets (already bundled in LazyVim) which
-adds hundreds of snippets for Python, Lua, TypeScript, and more."
+friendly-snippets (bundled with LazyVim) adds hundreds of snippets for
+Python, Lua, TypeScript, and more."
 
     engine_pause
 
@@ -128,9 +130,9 @@ automatically when you press '(' to open a call."
   • If a snippet has too many placeholders, press Ctrl-e mid-snippet to
     abandon it and keep the text typed so far.
 
-You can configure nvim-cmp in  lua/plugins/  to add or remove sources,
-change the trigger delay (keyword_length), or even disable it for specific
-filetypes. That comes in Module 4 (Customization)."
+You can configure blink.cmp in  lua/plugins/  to add or remove sources,
+change the trigger delay, or disable it for specific filetypes. That comes
+in Module 4 (Customization)."
 
     engine_pause
 
@@ -166,7 +168,7 @@ The check passes when 'print_summary' appears in the buffer."
     engine_section "Summary"
     # -----------------------------------------------------------------------
 
-    engine_teach "You now know how to drive nvim-cmp:
+    engine_teach "You now know how to drive blink.cmp:
 
   Ctrl-Space     — open the completion menu on demand
   Tab / Ctrl-n   — cycle forward through suggestions

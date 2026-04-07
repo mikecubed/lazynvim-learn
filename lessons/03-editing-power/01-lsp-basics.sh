@@ -83,7 +83,7 @@ on a symbol for these to work:"
 
     engine_show_key "" "gd"         "Go to Definition (in the current window)"
     engine_show_key "" "gD"         "Go to Declaration"
-    engine_show_key "" "gr"         "Go to References (Telescope list)"
+    engine_show_key "" "gr"         "Go to References (picker list)"
     engine_show_key "" "gI"         "Go to Implementation"
     engine_show_key "" "gy"         "Go to Type Definition"
     engine_show_key "" "K"          "Hover documentation (press K again to enter the popup)"
@@ -215,7 +215,7 @@ The check passes when 'add_tag' no longer appears in the buffer."
 
   gd            — go to definition (Ctrl-o to come back)
   gD            — go to declaration
-  gr            — see all references in a Telescope list
+  gr            — see all references in the picker
   K             — read the documentation for a symbol
   <leader>cr    — rename across the whole project
   <leader>ca    — code actions (fixes, refactors, imports)
@@ -224,7 +224,7 @@ The check passes when 'add_tag' no longer appears in the buffer."
 The LSP turns Neovim into an IDE-grade editor. As long as a language server
 exists for your language, you get all of this for free.
 
-Next up: nvim-cmp completions — intelligent suggestions as you type."
+Next up: completions — intelligent suggestions as you type."
 
     engine_pause
 }

@@ -126,14 +126,14 @@ selected node outright."
     engine_pause
 
     # -----------------------------------------------------------------------
-    engine_section "Flash in Telescope"
+    engine_section "Flash in the Picker"
     # -----------------------------------------------------------------------
 
-    engine_teach "Flash integrates with Telescope fuzzy finders. While a Telescope picker is
-open, press Ctrl-s to enable flash labels on visible results, then press a
-label to jump directly to that result."
+    engine_teach "Flash integrates with fuzzy pickers. While a picker is open, press Ctrl-s
+to enable flash labels on visible results, then press a label to jump directly
+to that result."
 
-    engine_show_key "Ctrl" "s"   "Flash labels inside an active Telescope picker"
+    engine_show_key "Ctrl" "s"   "Flash labels inside the picker"
 
     engine_teach "This means you can open a file picker (<leader>ff), narrow results with a
 few characters, then press Ctrl-s and a label instead of pressing the arrow
@@ -185,7 +185,7 @@ will be selected in Visual mode."
   s{chars}{label}  — jump anywhere on screen in ~3 keystrokes
   S{label}         — select a Treesitter syntax node in Visual mode
   r{chars}{label}  — remote flash (operate without moving cursor permanently)
-  Ctrl-s           — flash labels inside an active Telescope picker
+  Ctrl-s           — flash labels inside the picker
 
 Flash replaces the old '/' search-and-count workflow for in-screen navigation.
 Once it becomes muscle memory, you will rarely need to scroll or press arrow

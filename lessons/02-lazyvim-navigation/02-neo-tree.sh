@@ -218,7 +218,7 @@ The old name should disappear and the new name should appear in the tree."
 
 The explorer keeps your hands in Neovim — no terminal or file manager needed.
 
-Next up: Telescope — instant fuzzy searching across files, buffers, and text."
+Next up: the fuzzy finder for instant searching across files, buffers, and text."
 
     engine_pause
 }

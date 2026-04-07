@@ -89,12 +89,11 @@ unrelated changes mixed together."
     engine_pause
 
     # -----------------------------------------------------------------------
-    engine_section "Git Blame with Gitsigns"
+    engine_section "Git Blame"
     # -----------------------------------------------------------------------
 
     engine_teach "For a lighter-weight look at blame information without opening lazygit,
-LazyVim bundles gitsigns. It annotates the gutter with change indicators and
-provides quick blame commands directly from Normal mode:"
+LazyVim provides quick blame commands directly from Normal mode:"
 
     engine_show_key "Space" "gb" "Git blame — show commit info for current line"
     engine_show_key "Space" "gB" "Git blame — show full blame for entire file"
@@ -122,10 +121,10 @@ your project history:
   r      — reword the commit message (interactive rebase)
   d      — drop the commit
 
-For a quick git log without opening lazygit, Telescope also has you covered:"
+For a quick git log without opening lazygit, the picker also has you covered:"
 
-    engine_show_key "Space" "gc" "Git commits — browse log with Telescope"
-    engine_show_key "Space" "gs" "Git status — staged and unstaged with Telescope"
+    engine_show_key "Space" "gc" "Git commits — browse log with the picker"
+    engine_show_key "Space" "gs" "Git status — staged and unstaged with the picker"
 
     engine_pause
 
