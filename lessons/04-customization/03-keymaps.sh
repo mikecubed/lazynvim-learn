@@ -249,19 +249,23 @@ all mappings — just type a word from the description and it narrows instantly.
     engine_section "Discovering Keymaps with Which-Key"
     # -----------------------------------------------------------------------
 
-    engine_teach "LazyVim uses which-key to show available keymaps as you type. Try it
-in the Neovim pane:
+    engine_teach "LazyVim uses which-key to show available keymaps as you type.
+When you press Space (the leader key) and wait, which-key displays all
+available <leader> keymaps organized by group:
 
-  1. Press Space and wait — which-key shows all <leader> keymaps.
-  2. Look at the 'w' group (windows) — you will see mappings like
-     wd (delete window), wm (maximize), etc.
-  3. Press Escape to close the popup.
+  w — windows (wd = delete window, wm = maximize, ...)
+  f — find/files (ff = find file, fg = live grep, ...)
+  g — git (gg = lazygit, gb = blame, ...)
+  c — code (cr = rename, cf = format, ...)
+  s — search (more Telescope pickers)
 
-This is the fastest way to discover what keymaps are available."
+Pressing any prefix key (like g, ], [) also triggers which-key after a
+short delay, showing what follows. This is the fastest way to discover
+keymaps without memorizing them."
 
     engine_pause
 
-    engine_teach "Let's test your discovery skills."
+    engine_teach "Let's test your knowledge."
 
     engine_quiz \
         "What does <leader>wd do in LazyVim?" \
