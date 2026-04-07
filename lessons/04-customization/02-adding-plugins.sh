@@ -227,7 +227,7 @@ The check passes while the dashboard is open (before you press 'q')."
 
     engine_exercise "open-lazy-dashboard" \
         "Open the :Lazy Dashboard" \
-        "Run :Lazy to open the plugin manager dashboard. Explore the plugin list, then press 'check' (you can close with 'q' afterwards)." \
+        "Run :Lazy to open the plugin manager dashboard. Explore the plugin list, then type 'check' (you can close with 'q' afterwards)." \
         verify_lazy_dashboard_open \
         "In Normal mode type :Lazy and press Enter to open the dashboard." \
         "empty"

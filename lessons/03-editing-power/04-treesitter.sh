@@ -161,12 +161,12 @@ Steps:
   3. Press Enter again to expand to the expression M.counter + amount.
   4. Keep pressing Enter to keep expanding outward.
 
-The check passes as long as Visual mode is active — so press Check while
+The check passes as long as Visual mode is active — so type 'check' while
 the selection is still highlighted."
 
     engine_exercise "ts-incr-select" \
         "Expand a Treesitter selection with Enter" \
-        "Place the cursor inside M.increment (line 9), press 'v' then Enter to select a node, then press Enter again to expand. Keep pressing Enter to grow the selection. Press Check while still in Visual mode." \
+        "Place the cursor inside M.increment (line 9), press 'v' then Enter to select a node, then press Enter again to expand. Keep pressing Enter to grow the selection. type 'check' while still in Visual mode." \
         verify_visual_selection_active \
         "Start with the cursor on any identifier. Press 'v' then Enter, then keep pressing Enter. The check only needs Visual mode to be active." \
         "file" \

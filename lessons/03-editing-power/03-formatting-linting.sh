@@ -135,7 +135,7 @@ results change."
 Run the formatter to clean them all up at once:
   1. Press <leader>cf (Space, c, f).
   2. The buffer is rewritten in place.
-  3. Press Check."
+  3. type 'check'."
 
     engine_exercise "fmt-conform" \
         "Format sample.py with <leader>cf" \

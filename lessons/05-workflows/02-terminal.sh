@@ -20,26 +20,18 @@ lesson_info() {
 verify_terminal_open() {
     verify_reset
 
-    # First try the toggleterm filetype (managed floating/split terminals)
-    local ft_result
-    ft_result=$(nvim_lua "vim.iter(vim.api.nvim_list_wins()):any(function(w) local ft = vim.api.nvim_get_option_value('filetype', {buf=vim.api.nvim_win_get_buf(w)}) return ft == 'toggleterm' or ft == 'terminal' end)")
+    # Check for any terminal-like buffer: snacks_terminal, toggleterm, terminal,
+    # or any buffer whose name starts with "term://"
+    local result
+    result=$(nvim_lua "vim.iter(vim.api.nvim_list_bufs()):any(function(b) if not vim.api.nvim_buf_is_loaded(b) then return false end local ft = vim.bo[b].filetype local name = vim.api.nvim_buf_get_name(b) return ft == \"snacks_terminal\" or ft == \"toggleterm\" or ft == \"terminal\" or name:match(\"^term://\") ~= nil end)")
 
-    if [[ "$ft_result" == "true" ]]; then
-        VERIFY_MESSAGE="Terminal is open"
-        return 0
-    fi
-
-    # Fallback: look for any buffer whose name starts with "term://"
-    local term_result
-    term_result=$(nvim_lua "vim.iter(vim.api.nvim_list_bufs()):any(function(b) return vim.api.nvim_buf_get_name(b):match('^term://') ~= nil and vim.api.nvim_buf_is_loaded(b) end)")
-
-    if [[ "$term_result" == "true" ]]; then
+    if [[ "$result" == "true" ]]; then
         VERIFY_MESSAGE="Terminal is open"
         return 0
     fi
 
     VERIFY_MESSAGE="No terminal buffer found"
-    VERIFY_HINT="Press <leader>ft to open a floating terminal or <C-/> for a quick toggle."
+    VERIFY_HINT="Press <leader>ft to open a floating terminal or Ctrl-/ for a quick toggle."
     return 1
 }
 
@@ -148,9 +140,9 @@ commands — just open it. The check passes when a terminal buffer is visible."
 
     engine_exercise "terminal-open" \
         "Open an integrated terminal" \
-        "Press <leader>ft (Space f t) or Ctrl-/ to open a terminal. Leave it visible and press Check." \
+        "Press <leader>ft (Space f t) or Ctrl-/ to open a terminal. Leave it visible and type 'check'." \
         verify_terminal_open \
-        "Press Space then f then t. A floating terminal window should appear. Leave it open before pressing Check." \
+        "Press Space then f then t. A floating terminal window should appear. Leave it open before typing 'check'." \
         "empty"
 
     [[ $_ENGINE_QUIT -eq 1 ]] && return

@@ -206,7 +206,7 @@ The check passes while the Extras browser is open."
 
     engine_exercise "open-lazy-extras" \
         "Open :LazyExtras" \
-        "Run :LazyExtras to open the Extras browser. Browse the available Extras, then press 'check' (you can close with 'q' afterwards)." \
+        "Run :LazyExtras to open the Extras browser. Browse the available Extras, then type 'check' (you can close with 'q' afterwards)." \
         verify_lazy_extras_open \
         "In Normal mode type :LazyExtras and press Enter. The Extras browser will open." \
         "empty"

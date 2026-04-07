@@ -138,9 +138,9 @@ open. The check passes as soon as lazygit is running in a buffer."
 
     engine_exercise "lazygit-open" \
         "Open Lazygit with <leader>gg" \
-        "Press <leader>gg (Space g g) to open lazygit. Explore the layout — Files, Branches, Commits. Leave it open and press Check." \
+        "Press <leader>gg (Space g g) to open lazygit. Explore the layout — Files, Branches, Commits. Leave it open and type 'check'." \
         verify_lazygit_open \
-        "Press Space then g then g. Lazygit should fill the screen. Leave it open before pressing Check." \
+        "Press Space then g then g. Lazygit should fill the screen. Leave it open before typing 'check'." \
         "dir"
 
     [[ $_ENGINE_QUIT -eq 1 ]] && return

@@ -111,7 +111,7 @@ verifies all three at once.
     missing space after the comma in its signature. Press <leader>cf to run
     the formatter and clean it up.
 
-When all three are done, press Check."
+When all three are done, type 'check'."
 
     engine_pause
 
@@ -127,7 +127,7 @@ Take your time. Use which-key (<leader>) if you forget a binding."
 
     engine_exercise "capstone-workflow" \
         "Navigate, Rename, and Format" \
-        "1) Open sample.py with <leader>ff.  2) Place the cursor on 'add_tag' and press <leader>cr, rename it to 'attach_tag'.  3) Press <leader>cf to format the buffer.  Press Check when all three steps are complete." \
+        "1) Open sample.py with <leader>ff.  2) Place the cursor on 'add_tag' and press <leader>cr, rename it to 'attach_tag'.  3) Press <leader>cf to format the buffer.  type 'check' when all three steps are complete." \
         verify_capstone_complete \
         "Step 1: <leader>ff then type 'py'. Step 2: /add_tag Enter, then <leader>cr and type 'attach_tag'. Step 3: <leader>cf to format." \
         "dir"

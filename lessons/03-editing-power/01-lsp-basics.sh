@@ -142,11 +142,11 @@ basedpyright) starts in the background — it usually takes a few seconds.
 The check passes as soon as at least one LSP client is attached.
 
 If you see a warning icon in the status bar spinning, LSP is still starting.
-Wait for it to settle, then press Check."
+Wait for it to settle, then type 'check'."
 
     engine_exercise "lsp-attach" \
         "Confirm LSP is attached to sample.py" \
-        "Open sample.py and wait for the LSP to start. Press Check when the status bar is no longer showing a loading spinner." \
+        "Open sample.py and wait for the LSP to start. type 'check' when the status bar is no longer showing a loading spinner." \
         verify_lsp_ready \
         "The LSP may still be indexing. Wait 5-10 seconds and try again." \
         "file" \
@@ -200,7 +200,7 @@ The check passes when 'add_tag' no longer appears in the buffer."
 
     engine_exercise "lsp-rename" \
         "Rename add_tag to attach_tag with <leader>cr" \
-        "Place the cursor on 'add_tag' (line 21). Press <leader>cr (Space c r), clear the prompt, type 'attach_tag', and press Enter. Press Check when done." \
+        "Place the cursor on 'add_tag' (line 21). Press <leader>cr (Space c r), clear the prompt, type 'attach_tag', and press Enter. type 'check' when done." \
         verify_rename_add_tag \
         "Move cursor to 'add_tag', press Space then c then r, type the new name 'attach_tag', then press Enter." \
         "current"

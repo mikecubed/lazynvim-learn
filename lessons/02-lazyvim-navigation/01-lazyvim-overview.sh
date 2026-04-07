@@ -147,7 +147,7 @@ Press 'q' inside the dashboard to close it when you are done exploring."
 
     engine_exercise "open-lazy-dashboard" \
         "Open the :Lazy Dashboard" \
-        "Type :Lazy and press Enter to open the lazy.nvim plugin manager. The dashboard will appear in a floating window. Explore for a moment, then press 'check'." \
+        "Type :Lazy and press Enter to open the lazy.nvim plugin manager. The dashboard will appear in a floating window. Explore for a moment, then type 'check'." \
         verify_lazy_dashboard_open \
         "In Normal mode, type a colon then: Lazy — and press Enter." \
         "empty"
