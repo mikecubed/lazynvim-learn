@@ -13,14 +13,35 @@ lesson_info() {
 # Custom verifiers
 # ---------------------------------------------------------------------------
 
-# Check that <leader>wq exists in normal mode (LazyVim default: quit window)
+# Check that <leader>wq exists — which-key intercepts leader maps so we
+# need to search through vim.api.nvim_get_keymap which sees all layers.
 verify_leader_wq_exists() {
-    verify_keymap_exists "<leader>wq" "n"
+    verify_reset
+    local result
+    result=$(nvim_lua "vim.iter(vim.api.nvim_get_keymap(\"n\")):any(function(m) return m.lhs == \" wq\" end)")
+    if [[ "$result" == "true" ]]; then
+        VERIFY_MESSAGE="Keymap <leader>wq exists"
+        return 0
+    else
+        VERIFY_MESSAGE="Keymap <leader>wq not found"
+        VERIFY_HINT="This mapping should exist by default in LazyVim. Try :nmap <Space>wq"
+        return 1
+    fi
 }
 
-# Check that a core built-in keymap is present (sanity check for keymap exploration)
+# Check that jk insert-mode escape exists
 verify_escape_to_normal() {
-    verify_keymap_exists "jk" "i"
+    verify_reset
+    local result
+    result=$(nvim_lua "vim.iter(vim.api.nvim_get_keymap(\"i\")):any(function(m) return m.lhs == \"jk\" end)")
+    if [[ "$result" == "true" ]]; then
+        VERIFY_MESSAGE="Keymap jk exists in insert mode"
+        return 0
+    else
+        VERIFY_MESSAGE="Keymap jk not found in insert mode"
+        VERIFY_HINT="This mapping should exist by default in LazyVim"
+        return 1
+    fi
 }
 
 # ---------------------------------------------------------------------------
