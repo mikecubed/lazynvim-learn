@@ -176,11 +176,12 @@ bootstrap_config() {
         local mason_bin="$HOME/.local/share/lazynvim-learn/mason/bin"
         mkdir -p "$mason_bin"
 
+        local arch
+        arch=$(uname -m)
+
         # Install ruff (Python formatter/linter) if not present
         if [[ ! -x "$mason_bin/ruff" ]]; then
             echo "  Downloading ruff ..."
-            local arch
-            arch=$(uname -m)
             local ruff_target="ruff-${arch}-unknown-linux-gnu"
             if curl -sSL "https://github.com/astral-sh/ruff/releases/latest/download/${ruff_target}.tar.gz" \
                 | tar xz --strip-components=1 -C "$mason_bin" "${ruff_target}/ruff" 2>/dev/null; then
@@ -188,6 +189,25 @@ bootstrap_config() {
                 echo "  ruff installed."
             else
                 echo "  Warning: could not install ruff. Format exercises may not work."
+            fi
+        fi
+
+        # Install lazygit (git UI) if not on PATH or in mason
+        if ! command -v lazygit &>/dev/null && [[ ! -x "$mason_bin/lazygit" ]]; then
+            echo "  Downloading lazygit ..."
+            local lg_arch="$arch"
+            [[ "$lg_arch" == "x86_64" ]] && lg_arch="x86_64"
+            [[ "$lg_arch" == "aarch64" ]] && lg_arch="arm64"
+            local lg_ver
+            lg_ver=$(curl -sSL "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" 2>/dev/null \
+                | grep '"tag_name"' | head -1 | sed 's/.*"v\(.*\)".*/\1/')
+            if [[ -n "$lg_ver" ]] && curl -sSL \
+                "https://github.com/jesseduffield/lazygit/releases/download/v${lg_ver}/lazygit_${lg_ver}_Linux_${lg_arch}.tar.gz" \
+                | tar xz -C "$mason_bin" lazygit 2>/dev/null; then
+                chmod +x "$mason_bin/lazygit"
+                echo "  lazygit installed."
+            else
+                echo "  Warning: could not install lazygit. Git exercises may not work."
             fi
         fi
 
