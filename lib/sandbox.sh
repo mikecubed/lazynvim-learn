@@ -159,6 +159,8 @@ sandbox_setup_exercise() {
             if [[ -d "$exercise_src" ]]; then
                 cp -r "$exercise_src/." "$SANDBOX_DIR/"
             fi
+            # Init a git repo so lazygit and git exercises work
+            (cd "$SANDBOX_DIR" && git init -q && git add -A && git commit -q -m "initial" --no-gpg-sign) 2>/dev/null || true
             # Open the first file in the dir rather than the dir itself
             local first_file
             first_file=$(find "$SANDBOX_DIR" -maxdepth 1 -type f | sort | head -1)
