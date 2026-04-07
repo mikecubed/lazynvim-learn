@@ -145,26 +145,27 @@ panel update with each step."
     engine_section "Exercises"
     # -----------------------------------------------------------------------
 
-    # Check if DAP is available in the sandbox
+    # Launch a sandbox so we can check if DAP is installed
+    sandbox_setup_exercise "file" "sample.py" 2>/dev/null || true
+
+    # Check if DAP is installed (it's lazy-loaded via keys, so require("dap")
+    # won't work until the user presses <leader>d*). Check lazy's plugin list.
     local dap_available=0
     if sandbox_is_alive 2>/dev/null; then
         local dap_check
-        dap_check=$(nvim_lua "tostring(pcall(require, \"dap\"))")
+        dap_check=$(nvim_lua "require(\"lazy.core.config\").plugins[\"nvim-dap\"] ~= nil")
         [[ "$dap_check" == "true" ]] && dap_available=1
     fi
 
     if [[ $dap_available -eq 1 ]]; then
         engine_teach "DAP is available in this sandbox. Let's try setting a breakpoint."
 
-        engine_nvim_open "sample.py"
-
         engine_exercise "dap-set-breakpoint" \
             "Set a breakpoint on line 17 of sample.py" \
             "Navigate to line 17 (try '17G') and press <leader>db to toggle a breakpoint. A gutter marker should appear. Type 'check' when done." \
             verify_breakpoint_on_line_17 \
             "Press '17G' to jump to line 17, then press Space d b to set a breakpoint." \
-            "file" \
-            "sample.py"
+            "current"
 
         [[ $_ENGINE_QUIT -eq 1 ]] && return
     else
