@@ -33,9 +33,13 @@ separate window, and stitching the output back into your mental model of the
 code. The Debug Adapter Protocol (DAP) eliminates that by providing a standard
 interface that allows Neovim to talk directly to language debuggers.
 
-LazyVim bundles nvim-dap, nvim-dap-ui, and a collection of language adapters.
-Once configured, you set breakpoints and inspect state without ever leaving
-your buffer."
+nvim-dap, nvim-dap-ui, and language adapters are available as a LazyVim Extra.
+Once enabled and configured, you set breakpoints and inspect state without
+ever leaving your buffer.
+
+Note: DAP requires the dap LazyVim Extra and a language-specific adapter
+(e.g. debugpy for Python). This lesson covers the keybindings and workflow —
+exercises are quizzes since DAP setup varies by language."
 
     engine_pause
 
@@ -138,38 +142,28 @@ panel update with each step."
     engine_pause
 
     # -----------------------------------------------------------------------
-    engine_section "Exercise 1: Set a Breakpoint"
+    engine_section "Quizzes"
     # -----------------------------------------------------------------------
 
-    engine_teach "The sandbox has opened sample.py. Line 17 is inside the complete()
-method — it sets self.status = STATUS_DONE. Navigate to line 17 and set a
-breakpoint there with <leader>db.
+    engine_quiz "Which keybinding sets a breakpoint on the current line?" \
+        "<leader>dc" \
+        "<leader>db" \
+        "<leader>dB" \
+        "<leader>du" \
+        2
 
-You can jump to a specific line with:  17G  or  :17<Enter>
-
-The check passes when a breakpoint is registered on line 17."
-
-    engine_nvim_open "sample.py"
-
-    engine_exercise "dap-set-breakpoint" \
-        "Set a breakpoint on line 17 of sample.py" \
-        "Navigate to line 17 (try '17G' or ':17<Enter>') and press <leader>db to toggle a breakpoint. A gutter marker should appear. type 'check' when done." \
-        verify_breakpoint_on_line_17 \
-        "Press '17G' to jump to line 17, then press Space d b to set a breakpoint on that line." \
-        "file" \
-        "sample.py"
-
-    [[ $_ENGINE_QUIT -eq 1 ]] && return
-
-    # -----------------------------------------------------------------------
-    engine_section "Exercise 2: DAP Step Controls"
-    # -----------------------------------------------------------------------
-
-    engine_quiz "You are paused at a breakpoint and want to execute the current line without following any function calls it makes. Which DAP key do you use?" \
+    engine_quiz "You are paused at a breakpoint and want to execute the current line without following any function calls it makes. Which key do you use?" \
         "<leader>di (step into)" \
         "<leader>do (step over)" \
         "<leader>dO (step out)" \
         2
+
+    engine_quiz "How do you enable DAP in LazyVim?" \
+        "It is built-in, no setup needed" \
+        "Install nvim-dap manually with :Lazy" \
+        "Enable the dap LazyVim Extra in your config" \
+        "Run :DAP install" \
+        3
 
     # -----------------------------------------------------------------------
     engine_section "Summary"
