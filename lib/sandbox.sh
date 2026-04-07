@@ -27,8 +27,9 @@ sandbox_launch() {
     export NVIM_SOCKET
     export NVIM_APPNAME
 
-    # Build the nvim command
-    local nvim_cmd="nvim --listen ${NVIM_SOCKET}"
+    # Build the nvim command — set NVIM_APPNAME inline since tmux
+    # doesn't reliably inherit exported variables from the parent pane
+    local nvim_cmd="NVIM_APPNAME=${NVIM_APPNAME} nvim --listen ${NVIM_SOCKET}"
     [[ -n "$file" ]] && nvim_cmd="$nvim_cmd $(printf '%q' "$file")"
 
     # Build tmux split args — set starting directory if provided
