@@ -191,9 +191,9 @@ exercise for now."
         2
 
     engine_quiz "You are paused at a breakpoint and want to execute the current line without following any function calls it makes. Which key do you use?" \
-        "<leader>di (step into)" \
-        "<leader>do (step over)" \
-        "<leader>dO (step out)" \
+        "<leader>di" \
+        "<leader>do" \
+        "<leader>dO" \
         2
 
     # -----------------------------------------------------------------------
