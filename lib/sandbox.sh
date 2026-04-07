@@ -15,7 +15,7 @@ SANDBOX_DIR=""
 # ---------------------------------------------------------------------------
 # sandbox_launch [file]
 # ---------------------------------------------------------------------------
-# Split the current tmux window (bottom pane, ~40%), launch nvim inside it,
+# Split the current tmux window (right pane, ~40%), launch nvim inside it,
 # then wait until nvim is accepting RPC connections.
 sandbox_launch() {
     local file="${1:-}"

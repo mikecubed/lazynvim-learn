@@ -14,7 +14,7 @@ lesson_info() {
 # ---------------------------------------------------------------------------
 
 # Check 1: sample.py is the active buffer.
-# The user must navigate to it using <leader>ff or Neo-tree.
+# The user must navigate to it using <leader>ff or the file explorer.
 verify_capstone_file_open() {
     verify_file_open "sample.py"
 }
@@ -80,7 +80,7 @@ in real work."
 
     engine_show_key "Space" "ff"  "Find file with Telescope (Module 2)"
     engine_show_key "Space" "/"   "Live grep across the project (Module 2)"
-    engine_show_key "Space" "e"   "Toggle Neo-tree file explorer (Module 2)"
+    engine_show_key "Space" "e"   "Toggle file explorer (Module 2)"
     engine_show_key ""      "gd"  "Go to definition (Module 3 / LSP)"
     engine_show_key ""      "K"   "Hover documentation (Module 3 / LSP)"
     engine_show_key "Space" "cr"  "Rename symbol via LSP (Module 3)"
@@ -150,7 +150,7 @@ Take your time. Use which-key (<leader>) if you forget a binding."
 You started with the basics of modal editing and worked your way through:
 
   Module 1  — Normal, Insert, Visual, and Command-line modes
-  Module 2  — Telescope, Neo-tree, Flash, and Which-key
+  Module 2  — Telescope, the file explorer, Flash, and Which-key
   Module 3  — LSP, diagnostics, formatting, and refactoring
   Module 4  — LazyVim configuration and plugin customization
   Module 5  — Git (lazygit), terminal, and DAP debugging

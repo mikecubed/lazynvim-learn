@@ -137,7 +137,7 @@ them without touching the mouse:"
     engine_section "Exercise 1: Wait for LSP to Attach"
     # -----------------------------------------------------------------------
 
-    engine_teach "Open sample.py in the sandbox below. The Python LSP (pyright or
+    engine_teach "Open sample.py in the Neovim pane. The Python LSP (pyright or
 basedpyright) starts in the background — it usually takes a few seconds.
 The check passes as soon as at least one LSP client is attached.
 

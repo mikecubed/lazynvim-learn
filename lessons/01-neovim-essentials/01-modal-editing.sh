@@ -136,7 +136,7 @@ Normal mode. Here you can save files (':w'), quit (':q'), run substitutions
     engine_section "The Mode Indicator"
     # -----------------------------------------------------------------------
 
-    engine_teach "Look at the bottom-left of the Neovim pane (to the right). LazyVim shows a colored
+    engine_teach "Look at the bottom-left of the Neovim pane. LazyVim shows a colored
 status indicator that tells you the current mode:
 
   NORMAL  — you are in Normal mode (usually blue)

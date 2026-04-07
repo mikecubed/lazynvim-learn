@@ -255,7 +255,7 @@ engine_exercise() {
                 ui_print "${COLOR_DIM}  hint   — show a hint for this exercise${COLOR_RESET}"
                 ui_print "${COLOR_DIM}  skip   — mark this exercise done and move on${COLOR_RESET}"
                 ui_print "${COLOR_DIM}  quit   — exit the lesson and return to the menu${COLOR_RESET}"
-                ui_print "${COLOR_DIM}  (work in the Neovim pane below, then type 'check' here)${COLOR_RESET}"
+                ui_print "${COLOR_DIM}  (work in the Neovim pane to the right, then type 'check' here)${COLOR_RESET}"
                 printf '\n'
                 ;;
             "")

@@ -286,18 +286,22 @@ run_lesson() {
         lesson_info
     fi
 
+    local lesson_rc=0
     if declare -f lesson_run &>/dev/null; then
-        lesson_run || true
+        lesson_run || lesson_rc=$?
     fi
 
     # Close the sandbox pane now that the lesson is done
     sandbox_kill 2>/dev/null || true
 
-    progress_mark_complete "$module/$lesson"
+    # Only mark complete if the user didn't quit (engine_exercise returns 2 on quit)
+    if [[ $_ENGINE_QUIT -ne 1 ]]; then
+        progress_mark_complete "$module/$lesson"
 
-    # Show the completion screen after the final capstone lesson
-    if [[ "$module" == "05-workflows" && "$lesson" == "04-putting-it-together" ]]; then
-        show_completion_screen
+        # Show the completion screen after the final capstone lesson
+        if [[ "$module" == "05-workflows" && "$lesson" == "04-putting-it-together" ]]; then
+            show_completion_screen
+        fi
     fi
 }
 

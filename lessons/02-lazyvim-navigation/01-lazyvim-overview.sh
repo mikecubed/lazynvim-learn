@@ -178,7 +178,7 @@ Press 'q' inside the dashboard to close it when you are done exploring."
   • Your config lives in lua/plugins/ — LazyVim's source is separate
   • Extras are opt-in feature packs you enable with one import line
 
-Next up: Neo-tree — LazyVim's file explorer and project navigator."
+Next up: the file explorer for navigating your project."
 
     engine_pause
 }

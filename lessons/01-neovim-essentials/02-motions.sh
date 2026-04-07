@@ -232,7 +232,7 @@ to go back. These are especially powerful for quick edits within a line."
     engine_section "Exercises"
     # -----------------------------------------------------------------------
 
-    engine_teach "The Neovim pane below has sample.md open — a short reference file with
+    engine_teach "The Neovim pane has sample.md open — a short reference file with
 52 lines. Work through each exercise using what you just learned."
 
     # Exercise 1: jump to a specific line number
