@@ -172,8 +172,25 @@ bootstrap_config() {
             echo "         Neovim will attempt to install plugins on first launch."
         fi
 
-        echo "Installing required tools (ruff, pyright, lua-language-server) ..."
-        nvim --headless -c 'lua require("mason-registry").refresh()' -c 'MasonInstall ruff pyright lua-language-server' -c 'qa' 2>&1 || true
+        echo "Installing required tools ..."
+        local mason_bin="$HOME/.local/share/lazynvim-learn/mason/bin"
+        mkdir -p "$mason_bin"
+
+        # Install ruff (Python formatter/linter) if not present
+        if [[ ! -x "$mason_bin/ruff" ]]; then
+            echo "  Downloading ruff ..."
+            local arch
+            arch=$(uname -m)
+            local ruff_target="ruff-${arch}-unknown-linux-gnu"
+            if curl -sSL "https://github.com/astral-sh/ruff/releases/latest/download/${ruff_target}.tar.gz" \
+                | tar xz --strip-components=1 -C "$mason_bin" "${ruff_target}/ruff" 2>/dev/null; then
+                chmod +x "$mason_bin/ruff"
+                echo "  ruff installed."
+            else
+                echo "  Warning: could not install ruff. Format exercises may not work."
+            fi
+        fi
+
         echo "Bootstrap complete."
     fi
 }
