@@ -276,11 +276,11 @@ keymaps without memorizing them."
         2
 
     engine_quiz \
-        "How can you return to Normal mode from Insert mode without pressing Escape? (LazyVim shortcut)" \
-        "Type qq" \
-        "Type jk" \
-        "Press Ctrl-c" \
-        "Press Ctrl-n" \
+        "Which built-in key combination is equivalent to Escape for leaving Insert mode?" \
+        "Ctrl-c (interrupts, may skip some autocmds)" \
+        "Ctrl-[ (identical to Escape)" \
+        "Ctrl-n" \
+        "Ctrl-x" \
         2
 
     # -----------------------------------------------------------------------

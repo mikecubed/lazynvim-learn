@@ -152,14 +152,16 @@ something unexpected happens."
     engine_pause
 
     # -----------------------------------------------------------------------
-    engine_section "LazyVim's jk Escape"
+    engine_section "Leaving Insert Mode"
     # -----------------------------------------------------------------------
 
-    engine_teach "LazyVim adds a convenient shortcut: typing 'jk' quickly while in Insert
-mode returns you to Normal mode. This keeps your hands near the home row and
-avoids reaching for Escape. You can use either 'jk' or Escape — both work."
+    engine_teach "The standard way to leave Insert mode is pressing Escape. Some users
+also map Ctrl-[ which does the same thing. A popular custom mapping is to type
+'jk' quickly in Insert mode — if you want to try it, you can add it to your
+config later. For now, just use Escape."
 
-    engine_show_key "" "jk" "Exit Insert mode (LazyVim shortcut)"
+    engine_show_key "" "Escape" "Leave Insert mode and return to Normal"
+    engine_show_key "Ctrl" "[" "Same as Escape (built-in alternative)"
 
     engine_pause
 
@@ -177,7 +179,7 @@ How exercises work:
 
     engine_exercise "enter-insert-mode" \
         "Enter and Leave Insert Mode" \
-        "Press 'i' to enter Insert mode, then press Escape (or 'jk') to return to Normal mode. The check passes when Neovim is in Normal mode." \
+        "Press 'i' to enter Insert mode, then press Escape to return to Normal mode. The check passes when Neovim is in Normal mode." \
         verify_normal_mode \
         "Press 'i' to enter Insert mode, then Escape to return to Normal mode." \
         "empty"
