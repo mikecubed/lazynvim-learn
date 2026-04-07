@@ -277,8 +277,8 @@ keymaps without memorizing them."
 
     engine_quiz \
         "Which built-in key combination is equivalent to Escape for leaving Insert mode?" \
-        "Ctrl-c (interrupts, may skip some autocmds)" \
-        "Ctrl-[ (identical to Escape)" \
+        "Ctrl-c" \
+        "Ctrl-[" \
         "Ctrl-n" \
         "Ctrl-x" \
         2
