@@ -52,7 +52,7 @@ verify_file_in_buffers() {
     local expected="$1"
     verify_reset
     local result
-    result=$(nvim_lua "vim.iter(vim.api.nvim_list_bufs()):any(function(b) return vim.api.nvim_buf_get_name(b):match('$expected$') ~= nil end)")
+    result=$(nvim_lua "vim.iter(vim.api.nvim_list_bufs()):any(function(b) return vim.api.nvim_buf_get_name(b):match(\"$expected\") ~= nil end)")
 
     if [[ "$result" == "true" ]]; then
         VERIFY_MESSAGE="File '$expected' found in buffer list"
@@ -262,7 +262,7 @@ verify_split_has_file() {
     local filename="$1"
     verify_reset
     local result
-    result=$(nvim_lua "vim.iter(vim.api.nvim_tabpage_list_wins(0)):any(function(w) return vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(w)):match('$filename$') ~= nil end)")
+    result=$(nvim_lua "vim.iter(vim.api.nvim_tabpage_list_wins(0)):any(function(w) return vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(w)):match(\"$filename\") ~= nil end)")
 
     if [[ "$result" == "true" ]]; then
         VERIFY_MESSAGE="Found a window with '$filename'"
@@ -361,7 +361,7 @@ verify_plugin_installed() {
     local name="$1"
     verify_reset
     local result
-    result=$(nvim_lua "require('lazy.core.config').plugins['$name'] ~= nil")
+    result=$(nvim_lua "require(\"lazy.core.config\").plugins[\"$name\"] ~= nil")
 
     if [[ "$result" == "true" ]]; then
         VERIFY_MESSAGE="Plugin '$name' is installed"
@@ -378,7 +378,7 @@ verify_plugin_loaded() {
     local name="$1"
     verify_reset
     local result
-    result=$(nvim_lua "require('lazy.core.config').plugins['$name'] ~= nil and require('lazy.core.config').plugins['$name']._.loaded ~= nil")
+    result=$(nvim_lua "require(\"lazy.core.config\").plugins[\"$name\"] ~= nil and require(\"lazy.core.config\").plugins[\"$name\"]._.loaded ~= nil")
 
     if [[ "$result" == "true" ]]; then
         VERIFY_MESSAGE="Plugin '$name' is loaded"
@@ -412,7 +412,8 @@ verify_filetype_visible() {
     local expected_ft="$1"
     verify_reset
     local result
-    result=$(nvim_lua "vim.iter(vim.api.nvim_list_wins()):any(function(w) return vim.api.nvim_get_option_value('filetype', {buf=vim.api.nvim_win_get_buf(w)}) == '$expected_ft' end)")
+    # Use double quotes in Lua strings — single quotes break luaeval('...') wrapping
+    result=$(nvim_lua "vim.iter(vim.api.nvim_list_wins()):any(function(w) return vim.api.nvim_get_option_value(\"filetype\", {buf=vim.api.nvim_win_get_buf(w)}) == \"$expected_ft\" end)")
 
     if [[ "$result" == "true" ]]; then
         VERIFY_MESSAGE="Found window with filetype '$expected_ft'"
@@ -521,7 +522,7 @@ verify_via_companion() {
     verify_reset
 
     local result
-    result=$(nvim_lua "require('lazynvim-learn.verify').$func_name($args)")
+    result=$(nvim_lua "require(\"lazynvim-learn.verify\").$func_name($args)")
 
     # Parse "pass:message" or "fail:message:hint"
     local status="${result%%:*}"
