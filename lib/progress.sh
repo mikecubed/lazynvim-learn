@@ -91,14 +91,19 @@ progress_module_percent() {
         return 0
     fi
 
-    # Count completed entries in the progress file for this module
+    # Count completed LESSON entries (module/lesson:complete) — not exercise
+    # entries (module/lesson/exercise:complete) which have two slashes.
     local completed=0
     if [[ -f "$PROGRESS_FILE" ]]; then
-        local line
+        local line key
         while IFS= read -r line; do
-            # Match lines like: module/something:complete
             if [[ "$line" == "${module}/"*":complete" ]]; then
-                completed=$((completed + 1))
+                key="${line%%:*}"
+                # Only count if key has exactly one slash (lesson level)
+                local stripped="${key//[!\/]/}"
+                if [[ ${#stripped} -eq 1 ]]; then
+                    completed=$((completed + 1))
+                fi
             fi
         done < "$PROGRESS_FILE"
     fi
