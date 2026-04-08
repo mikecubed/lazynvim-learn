@@ -484,7 +484,13 @@ main_menu() {
             fi
 
         elif [[ "$choice" -eq "$extra_start" ]]; then
-            # Quick Refresher — always available, not gated
+            # Quick Refresher — always available, always starts fresh
+            # Clear any previous refresher progress so exercises repeat
+            if [[ -f "$PROGRESS_FILE" ]]; then
+                local tmp
+                tmp=$(grep -v "^06-refresher/" "$PROGRESS_FILE" 2>/dev/null || true)
+                echo "$tmp" > "$PROGRESS_FILE"
+            fi
             run_lesson "06-refresher" "01-quick-refresher"
 
         elif [[ "$choice" -eq $(( extra_start + 1 )) ]]; then
