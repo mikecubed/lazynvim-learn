@@ -19,6 +19,14 @@ CURRENT_EXERCISE=""    # exercise ID within lesson
 # Internal: used by engine_exercise to signal quit-from-lesson
 _ENGINE_QUIT=0
 
+# Drill mode hooks — set by lib/drill.sh when a drill is running
+_ENGINE_DRILL_ACTIVE=0          # 1 when inside a drill
+_ENGINE_EXERCISE_PASS_HOOK=""   # function name called on exercise pass
+_ENGINE_EXERCISE_FAIL_HOOK=""   # function name called on exercise fail
+_ENGINE_EXERCISE_HINT_HOOK=""   # function name called when hint requested
+_ENGINE_EXERCISE_SKIP_HOOK=""   # function name called on skip
+_ENGINE_EXERCISE_START_HOOK=""  # function name called when exercise starts
+
 # ---------------------------------------------------------------------------
 # engine_section "Title"
 # ---------------------------------------------------------------------------
@@ -184,6 +192,12 @@ engine_exercise() {
     printf '\n'
 
     local fail_count=0
+
+    # Call drill start hook if active
+    if [[ $_ENGINE_DRILL_ACTIVE -eq 1 && -n "$_ENGINE_EXERCISE_START_HOOK" ]]; then
+        "$_ENGINE_EXERCISE_START_HOOK"
+    fi
+
     local input
 
     while true; do
@@ -216,9 +230,17 @@ engine_exercise() {
                     if [[ -n "$CURRENT_LESSON" && -n "$id" ]]; then
                         progress_mark_complete "${CURRENT_LESSON}/${id}"
                     fi
+                    # Call drill pass hook if active
+                    if [[ $_ENGINE_DRILL_ACTIVE -eq 1 && -n "$_ENGINE_EXERCISE_PASS_HOOK" ]]; then
+                        "$_ENGINE_EXERCISE_PASS_HOOK"
+                    fi
                     break
                 else
                     fail_count=$(( fail_count + 1 ))
+                    # Call drill fail hook if active
+                    if [[ $_ENGINE_DRILL_ACTIVE -eq 1 && -n "$_ENGINE_EXERCISE_FAIL_HOOK" ]]; then
+                        "$_ENGINE_EXERCISE_FAIL_HOOK"
+                    fi
                     ui_error "${VERIFY_MESSAGE:-Not there yet.}"
                     printf '\n'
                     # Show hint automatically after 2 failures
@@ -234,6 +256,10 @@ engine_exercise() {
                 else
                     ui_warn "No hint available for this exercise."
                 fi
+                # Call drill hint hook if active
+                if [[ $_ENGINE_DRILL_ACTIVE -eq 1 && -n "$_ENGINE_EXERCISE_HINT_HOOK" ]]; then
+                    "$_ENGINE_EXERCISE_HINT_HOOK"
+                fi
                 printf '\n'
                 ;;
             skip)
@@ -241,6 +267,10 @@ engine_exercise() {
                 printf '\n'
                 if [[ -n "$CURRENT_LESSON" && -n "$id" ]]; then
                     progress_mark_complete "${CURRENT_LESSON}/${id}"
+                fi
+                # Call drill skip hook if active
+                if [[ $_ENGINE_DRILL_ACTIVE -eq 1 && -n "$_ENGINE_EXERCISE_SKIP_HOOK" ]]; then
+                    "$_ENGINE_EXERCISE_SKIP_HOOK"
                 fi
                 break
                 ;;
