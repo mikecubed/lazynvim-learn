@@ -80,14 +80,13 @@ lesson_run() {
     engine_teach "No explanations — just exercises. One sandbox, eight tasks.
 Complete as many as you can. Type 'skip' to move on if you get stuck."
 
-    # Launch sandbox once with sample.py — reuse for all exercises
+    # Launch sandbox with all exercise files — reuse for all exercises
     engine_exercise "r-insert-text" \
         "1. Enter Insert mode and type text" \
         "Press i, type 'refresher complete', press Escape. Type 'check' when in Normal mode." \
         verify_refresher_typed_text \
         "i → type the text → Escape" \
-        "file" \
-        "sample.py"
+        "dir"
 
     [[ $_ENGINE_QUIT -eq 1 ]] && return
 
