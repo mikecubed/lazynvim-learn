@@ -243,8 +243,8 @@ discover_modules() {
         | while IFS= read -r -d '' dir; do
             local name
             name="$(basename "$dir")"
-            # Skip the refresher module — it's accessed via the menu, not as a regular module
-            [[ "$name" == "06-refresher" ]] && continue
+            # Skip special modules — accessed via the menu, not as regular modules
+            [[ "$name" == "06-refresher" || "$name" == "07-drills" ]] && continue
             echo "$name"
         done
 }
@@ -416,6 +416,151 @@ show_lesson_menu() {
 }
 
 # ---------------------------------------------------------------------------
+# run_drill "drill_basename"
+# Run a drill with timing hooks wired up.
+# ---------------------------------------------------------------------------
+run_drill() {
+    local drill="$1"
+
+    # Clear any previous drill progress so exercises always start fresh
+    if [[ -f "$PROGRESS_FILE" ]]; then
+        local tmp
+        tmp=$(grep -v "^07-drills/" "$PROGRESS_FILE" 2>/dev/null || true)
+        echo "$tmp" > "$PROGRESS_FILE"
+    fi
+
+    # Wire up engine hooks for drill tracking
+    _ENGINE_DRILL_ACTIVE=1
+    _ENGINE_EXERCISE_START_HOOK="_drill_on_exercise_start"
+    _ENGINE_EXERCISE_PASS_HOOK="_drill_on_exercise_pass"
+    _ENGINE_EXERCISE_FAIL_HOOK="drill_record_fail"
+    _ENGINE_EXERCISE_HINT_HOOK="drill_record_hint"
+    _ENGINE_EXERCISE_SKIP_HOOK="_drill_on_exercise_skip"
+
+    drill_reset_counters
+    drill_start_timer
+
+    run_lesson "07-drills" "$drill"
+
+    # Show scorecard if the user didn't quit
+    if [[ $_ENGINE_QUIT -ne 1 ]]; then
+        # Source the drill file to get DRILL_EXERCISE_COUNT
+        local drill_file="$PROJECT_ROOT/lessons/07-drills/${drill}.sh"
+        # shellcheck source=/dev/null
+        source "$drill_file"
+        local count="${DRILL_EXERCISE_COUNT:-8}"
+        drill_show_scorecard "$drill" "$count"
+        ui_prompt
+    fi
+
+    # Clean up reference file (may not have been closed if user quit early)
+    [[ -n "${_DRILL_REF_FILE:-}" ]] && rm -f "$_DRILL_REF_FILE" 2>/dev/null
+    _DRILL_REF_FILE=""
+
+    # Unhook
+    _ENGINE_DRILL_ACTIVE=0
+    _ENGINE_EXERCISE_START_HOOK=""
+    _ENGINE_EXERCISE_PASS_HOOK=""
+    _ENGINE_EXERCISE_FAIL_HOOK=""
+    _ENGINE_EXERCISE_HINT_HOOK=""
+    _ENGINE_EXERCISE_SKIP_HOOK=""
+}
+
+# Internal drill hooks called by the engine
+_drill_on_exercise_start() {
+    drill_reset_exercise
+    drill_start_exercise_timer
+}
+
+_drill_on_exercise_pass() {
+    drill_record_pass
+    drill_stop_exercise_timer
+}
+
+_drill_on_exercise_skip() {
+    drill_record_skip
+    drill_stop_exercise_timer
+}
+
+# ---------------------------------------------------------------------------
+# drills_menu
+# Show the drills submenu with mode toggle, best times, and drill selection.
+# ---------------------------------------------------------------------------
+drills_menu() {
+    drill_load_mode
+
+    while true; do
+        clear 2>/dev/null || true
+        ui_header "★ Skill Drills ★"
+        printf '\n'
+
+        # Mode display
+        local mode_display
+        if drill_is_hard_mode; then
+            mode_display="Hard"
+        else
+            mode_display="Normal"
+        fi
+        printf "  Mode: ${COLOR_BOLD}%s${COLOR_RESET}  (toggle: ${COLOR_CYAN}m${COLOR_RESET})\n" "$mode_display"
+        printf '\n'
+
+        # Discover drills
+        local -a drills=()
+        local d
+        while IFS= read -r d; do
+            [[ -n "$d" ]] && drills+=("$d")
+        done < <(discover_lessons "07-drills")
+
+        if [[ ${#drills[@]} -eq 0 ]]; then
+            echo "  No drills found."
+            printf '\n'
+        else
+            local i
+            for (( i=0; i<${#drills[@]}; i++ )); do
+                local drill_name="${drills[$i]}"
+                local best
+                best=$(drill_best_time "$drill_name")
+                local best_display="--:--"
+                if [[ -n "$best" ]]; then
+                    best_display=$(_drill_format_time "$best")
+                fi
+                local star=" "
+                if drill_has_clean_run "$drill_name"; then
+                    star="${COLOR_GREEN}★${COLOR_RESET}"
+                fi
+
+                # Format drill name for display
+                local display
+                display=$(_drill_display_name "$drill_name")
+                printf "  %s %2d. %-22s Best: %s\n" "$star" $((i+1)) "$display" "$best_display"
+            done
+            printf '\n'
+        fi
+
+        printf "   ${COLOR_DIM}b. Back${COLOR_RESET}\n"
+        printf '\n'
+
+        local choice
+        printf "  ${COLOR_CYAN}Select a drill: ${COLOR_RESET}"
+        if read -r choice </dev/tty 2>/dev/null; then
+            :
+        else
+            read -r choice
+        fi
+
+        if [[ "$choice" == "b" || "$choice" == "B" ]]; then
+            return
+        elif [[ "$choice" == "m" || "$choice" == "M" ]]; then
+            drill_toggle_mode
+        elif [[ "$choice" =~ ^[0-9]+$ ]] && \
+             [[ "$choice" -ge 1 ]] && \
+             [[ "$choice" -le ${#drills[@]} ]]; then
+            run_drill "${drills[$((choice-1))]}"
+        fi
+    done
+}
+
+# ---------------------------------------------------------------------------
 # main_menu
 # Show the interactive main menu loop.
 # ---------------------------------------------------------------------------
@@ -452,7 +597,7 @@ main_menu() {
 
         # Extra menu options
         local extra_start=$(( ${#modules[@]} + 1 ))
-        echo "  $extra_start) Quick Refresher (5-min drill)"
+        echo "  $extra_start) Drills (practice & build speed)"
         echo "  $(( extra_start + 1 ))) Continue (resume last in-progress)"
         echo "  $(( extra_start + 2 ))) Reset Progress"
         echo "  $(( extra_start + 3 ))) Quit"
@@ -484,14 +629,8 @@ main_menu() {
             fi
 
         elif [[ "$choice" -eq "$extra_start" ]]; then
-            # Quick Refresher — always available, always starts fresh
-            # Clear any previous refresher progress so exercises repeat
-            if [[ -f "$PROGRESS_FILE" ]]; then
-                local tmp
-                tmp=$(grep -v "^06-refresher/" "$PROGRESS_FILE" 2>/dev/null || true)
-                echo "$tmp" > "$PROGRESS_FILE"
-            fi
-            run_lesson "06-refresher" "01-quick-refresher"
+            # Drills submenu
+            drills_menu
 
         elif [[ "$choice" -eq $(( extra_start + 1 )) ]]; then
             # Continue
@@ -559,6 +698,8 @@ main() {
     source "$PROJECT_ROOT/lib/verify.sh"
     # shellcheck source=lib/engine.sh
     source "$PROJECT_ROOT/lib/engine.sh"
+    # shellcheck source=lib/drill.sh
+    source "$PROJECT_ROOT/lib/drill.sh"
 
     # Register cleanup trap
     trap cleanup EXIT INT TERM
