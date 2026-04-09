@@ -124,6 +124,23 @@ the class body, caa changes an argument in a call."
     engine_show_key "d/c/y" "aa"   "Around argument (includes comma)"
     engine_show_key "d/c/y" "ia"   "Inside argument"
 
+    engine_teach "Neovim 0.12 also added built-in Treesitter motions in Visual mode:
+
+  an   — expand selection outward to the next parent node
+  in   — shrink selection inward to a child node
+  [n   — jump to the previous sibling node
+  ]n   — jump to the next sibling node
+
+These work without any plugin — they are part of Neovim itself. The
+nvim-treesitter-textobjects plugin is still needed for the structural
+text objects above (af, if, ac, etc.), but for quick node-based
+selection, the built-in motions are a lightweight alternative."
+
+    engine_show_key "" "an"   "(Visual) Expand selection to parent node"
+    engine_show_key "" "in"   "(Visual) Shrink selection to child node"
+    engine_show_key "" "[n"   "(Visual) Previous sibling node"
+    engine_show_key "" "]n"   "(Visual) Next sibling node"
+
     engine_pause
 
     # -----------------------------------------------------------------------
@@ -195,6 +212,7 @@ the selection is still highlighted."
 
   Accurate highlighting  — colors reflect code semantics, not regex patterns
   Incremental selection  — v + Enter to expand node by node
+  Built-in node motions  — an/in to expand/shrink, [n/]n for siblings
   Structural text objects — af, if, ac, ic, aa, ia for precise edits
   :InspectTree           — explore the parse tree to understand any file
   :TSInstall <lang>      — add a parser for any supported language
@@ -203,11 +221,8 @@ You do not need to think about Treesitter most of the time — it works
 invisibly. But knowing it is there helps you understand why certain
 features work, and what to add to your config when they do not.
 
-Congratulations — you have completed Module 3: Editing Power.
-
-You are now equipped with the full professional toolkit:
-  LSP for intelligence, completions for speed,
-  formatters for consistency, Treesitter for precision."
+Next up: undo and the undo tree — editing fearlessly because you can
+always get back."
 
     engine_pause
 }

@@ -70,7 +70,11 @@ or Go file the right language server starts automatically in the background."
   Code actions        — quick-fixes, import organizers, extract refactors
   Diagnostics         — inline errors and warnings without leaving the editor
 
-All of this happens without leaving Neovim and without running any build step."
+All of this happens without leaving Neovim and without running any build step.
+
+Neovim 0.12 added the :lsp command for managing LSP clients. Type :lsp to
+see attached clients, restart them, or view logs — it replaces the older
+LspInfo and LspRestart commands you may see in older tutorials."
 
     engine_pause
 
@@ -220,6 +224,7 @@ The check passes when 'add_tag' no longer appears in the buffer."
   <leader>cr    — rename across the whole project
   <leader>ca    — code actions (fixes, refactors, imports)
   ]d / [d       — navigate between diagnostics
+  :lsp          — manage LSP clients (status, restart, logs)
 
 The LSP turns Neovim into an IDE-grade editor. As long as a language server
 exists for your language, you get all of this for free.
