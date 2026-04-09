@@ -112,19 +112,19 @@ verify_nav_end_of_word() {
 
 verify_nav_screen_position() {
     verify_reset
-    local line
+    local line top_line bot_line
     line=$(nvim_eval "line('.')")
-    local last_line
-    last_line=$(nvim_eval "line('\$')")
+    top_line=$(nvim_eval "line('w0')")
+    bot_line=$(nvim_eval "line('w\$')")
+    local mid=$(( (top_line + bot_line) / 2 ))
+    local diff=$(( line - mid ))
+    [[ "$diff" -lt 0 ]] && diff=$(( -diff ))
 
-    # M lands on whatever Neovim considers the screen middle, which varies
-    # with terminal size. Just verify the cursor is not on the first line,
-    # last line, or line 41 (where the previous exercise left it).
-    if [[ "$line" -ne 1 && "$line" -ne "$last_line" && "$line" -ne 41 ]]; then
+    if [[ "$diff" -le 2 ]]; then
         VERIFY_MESSAGE="Cursor is at the middle of the screen (line $line)"
         return 0
     fi
-    VERIFY_MESSAGE="Cursor is on line $line — press M to jump to the screen middle"
+    VERIFY_MESSAGE="Cursor is on line $line — expected near middle (line ~$mid)"
     VERIFY_HINT="Press M (capital M) to jump to the middle of the visible screen"
     return 1
 }
