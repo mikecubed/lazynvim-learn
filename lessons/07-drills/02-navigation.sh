@@ -115,7 +115,12 @@ verify_nav_screen_position() {
     local line top_line bot_line
     line=$(nvim_eval "line('.')")
     top_line=$(nvim_eval "line('w0')")
-    bot_line=$(nvim_eval "line('w\$')")
+    # Use winheight to compute bottom visible line — avoids line('w$')
+    # which has quoting issues passing '$' through bash → --remote-expr
+    local win_height
+    win_height=$(nvim_eval "winheight(0)")
+    bot_line=$(( top_line + win_height - 1 ))
+
     local mid=$(( (top_line + bot_line) / 2 ))
     local diff=$(( line - mid ))
     [[ "$diff" -lt 0 ]] && diff=$(( -diff ))
