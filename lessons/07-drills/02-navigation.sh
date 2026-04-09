@@ -114,22 +114,20 @@ verify_nav_screen_position() {
     verify_reset
     local line
     line=$(nvim_lua "vim.api.nvim_win_get_cursor(0)[1]")
-    local win_height
-    win_height=$(nvim_lua "vim.api.nvim_win_get_height(0)")
     local top_line
     top_line=$(nvim_lua "vim.fn.line('w0')")
     local bot_line
     bot_line=$(nvim_lua "vim.fn.line('w$')")
-    local mid_line=$(( (top_line + bot_line) / 2 ))
+    local mid_low=$(( (top_line + bot_line) / 2 ))
+    local mid_high=$(( (top_line + bot_line + 1) / 2 ))
 
-    # Accept if cursor is within 2 lines of the middle of the visible window
-    local diff=$(( line - mid_line ))
-    if [[ "$diff" -lt 0 ]]; then diff=$(( -diff )); fi
-    if [[ "$diff" -le 2 ]]; then
+    # Accept cursor anywhere within 1 line of the midpoint (accounts for
+    # Neovim's scrolloff and rounding differences)
+    if [[ "$line" -ge $((mid_low - 1)) && "$line" -le $((mid_high + 1)) ]]; then
         VERIFY_MESSAGE="Cursor is at the middle of the screen"
         return 0
     fi
-    VERIFY_MESSAGE="Cursor is on line $line — expected near middle (line ~$mid_line)"
+    VERIFY_MESSAGE="Cursor is on line $line — expected near middle (lines $mid_low-$mid_high)"
     VERIFY_HINT="Press M to jump to the middle of the visible screen"
     return 1
 }

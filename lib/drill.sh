@@ -357,18 +357,23 @@ drill_show_scorecard() {
 
 # drill_show_reference "text"
 # In normal mode, open a floating reference window in Neovim via the
-# companion plugin. Text is a newline-separated cheat sheet string.
+# companion plugin. Text uses literal \n for line breaks.
 drill_show_reference() {
     local text="$1"
     if ! drill_is_hard_mode; then
-        nvim_lua "require('lazynvim-learn.reference').show('${text}')"
+        # Write reference text to a temp file, then have Neovim read it.
+        # This avoids all quoting issues with single/double quotes in the text.
+        local ref_file="/tmp/lazynvim-learn-ref-$$.txt"
+        printf '%b\n' "$text" > "$ref_file"
+        nvim_exec "lua require('lazynvim-learn.reference').show_file('${ref_file}')"
     fi
 }
 
 # drill_hide_reference
 # Close the reference window in Neovim.
 drill_hide_reference() {
-    nvim_lua "require('lazynvim-learn.reference').hide()"
+    nvim_exec "lua require('lazynvim-learn.reference').hide()"
+    rm -f "/tmp/lazynvim-learn-ref-$$.txt" 2>/dev/null
 }
 
 # ---------------------------------------------------------------------------
