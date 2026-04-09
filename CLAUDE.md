@@ -46,6 +46,8 @@ Verification functions follow a strict contract: call `verify_reset`, query Neov
 
 Custom verifiers in lessons should compose the standard functions from `lib/verify.sh`. See `docs/verification.md` for the full API.
 
+**CRITICAL: No single quotes inside `nvim_lua()` strings.** `nvim_lua()` wraps its argument with `luaeval('...')`, so any single quote in the Lua expression will break the wrapper. Always use escaped double quotes for Lua strings: `nvim_lua "vim.bo[buf].filetype == \"value\""`. This applies to all callers of `nvim_lua()` in verifiers, lessons, and the companion plugin bridge.
+
 ## Companion Plugin Constraints
 
 The companion plugin (`configs/base/lua/lazynvim-learn/`) must: have no UI, no keybindings, be stateless between exercises (call `tracker.reset()` and `scaffold.clear_marks()` before each), return strings instead of throwing errors, and stay under 200 lines total.
