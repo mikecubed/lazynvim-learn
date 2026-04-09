@@ -72,9 +72,15 @@ or Go file the right language server starts automatically in the background."
 
 All of this happens without leaving Neovim and without running any build step.
 
-Neovim 0.12 added the :lsp command for managing LSP clients. Type :lsp to
-see attached clients, restart them, or view logs — it replaces the older
-LspInfo and LspRestart commands you may see in older tutorials."
+Neovim 0.12 added the :lsp command for managing LSP client lifecycle:
+  :lsp enable    — enable a language server
+  :lsp restart   — restart the server for the current buffer
+  :lsp stop      — stop a running server
+  :lsp disable   — disable a server
+
+To see which LSP clients are attached, use <leader>cl (LazyVim maps this
+to show LSP info). Older tutorials may reference LspInfo or LspRestart
+— those commands no longer exist in Neovim 0.12."
 
     engine_pause
 
@@ -224,7 +230,8 @@ The check passes when 'add_tag' no longer appears in the buffer."
   <leader>cr    — rename across the whole project
   <leader>ca    — code actions (fixes, refactors, imports)
   ]d / [d       — navigate between diagnostics
-  :lsp          — manage LSP clients (status, restart, logs)
+  <leader>cl    — show LSP client info
+  :lsp restart  — restart the LSP server for the current buffer
 
 The LSP turns Neovim into an IDE-grade editor. As long as a language server
 exists for your language, you get all of this for free.
