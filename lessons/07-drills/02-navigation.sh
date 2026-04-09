@@ -113,11 +113,11 @@ verify_nav_end_of_word() {
 verify_nav_screen_position() {
     verify_reset
     local line
-    line=$(nvim_lua "vim.api.nvim_win_get_cursor(0)[1]")
+    line=$(nvim_eval "line('.')")
     local top_line
-    top_line=$(nvim_lua "vim.fn.line('w0')")
+    top_line=$(nvim_eval "line('w0')")
     local bot_line
-    bot_line=$(nvim_lua "vim.fn.line('w$')")
+    bot_line=$(nvim_eval "line('w\$')")
     local mid_low=$(( (top_line + bot_line) / 2 ))
     local mid_high=$(( (top_line + bot_line + 1) / 2 ))
 
