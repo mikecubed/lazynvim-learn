@@ -153,14 +153,13 @@ drill_reset_exercise() {
 # Score storage
 # ---------------------------------------------------------------------------
 
-# drill_save_score "drill_name" exercise_count
+# drill_save_score "drill_name" exercise_count [total_secs]
 # Compute the clean flag and append one score line to the scores file.
+# If total_secs is not provided, it is computed from drill_elapsed.
 drill_save_score() {
     local drill_name="$1"
     local exercise_count="$2"
-
-    local total_secs
-    total_secs=$(drill_elapsed)
+    local total_secs="${3:-$(drill_elapsed)}"
 
     # Clean run: all first-try, no hints, no skips
     local clean=0
@@ -246,11 +245,11 @@ drill_show_scorecard() {
     local drill_name="$1"
     local exercise_count="$2"
 
-    # Save score BEFORE displaying
-    drill_save_score "$drill_name" "$exercise_count"
-
     local total_secs
     total_secs=$(drill_elapsed)
+
+    # Save score BEFORE displaying, using the same elapsed time
+    drill_save_score "$drill_name" "$exercise_count" "$total_secs"
 
     local clean=0
     if [[ "$DRILL_FIRST_TRY_COUNT" -eq "$exercise_count" \
@@ -269,17 +268,16 @@ drill_show_scorecard() {
 
     # Look up best time (across all modes, excluding the run we just saved
     # which may itself be the best)
-    local best_secs best_mode best_str
-    best_str=""
-    _drill_find_best "$drill_name" best_secs best_mode
-    if [[ -n "$best_secs" ]]; then
+    local best_str=""
+    _drill_find_best "$drill_name"
+    if [[ -n "$_DRILL_BEST_SECS" ]]; then
         local best_mode_label
-        if [[ "$best_mode" == "hard" ]]; then
+        if [[ "$_DRILL_BEST_MODE" == "hard" ]]; then
             best_mode_label="Hard"
         else
             best_mode_label="Normal"
         fi
-        best_str="$(_drill_format_time "$best_secs") (${best_mode_label})"
+        best_str="$(_drill_format_time "$_DRILL_BEST_SECS") (${best_mode_label})"
     else
         best_str="--"
     fi
@@ -426,15 +424,13 @@ _drill_best_time_filter() {
     printf '%s' "$best"
 }
 
-# _drill_find_best "drill_name" var_secs var_mode
-# Find the overall best time and its mode, storing results in the named
-# variables via nameref.
+# _drill_find_best "drill_name"
+# Find the overall best time and its mode. Sets globals
+# _DRILL_BEST_SECS and _DRILL_BEST_MODE (avoids Bash 4.3+ namerefs).
 _drill_find_best() {
     local drill_name="$1"
-    local -n _out_secs="$2"
-    local -n _out_mode="$3"
-    _out_secs=""
-    _out_mode=""
+    _DRILL_BEST_SECS=""
+    _DRILL_BEST_MODE=""
     if [[ ! -f "$DRILL_SCORES_FILE" ]]; then
         return
     fi
@@ -448,9 +444,9 @@ _drill_find_best() {
         local secs mode
         secs=$(_drill_field "$line" 3)
         mode=$(_drill_field "$line" 1)
-        if [[ -z "$_out_secs" || "$secs" -lt "$_out_secs" ]]; then
-            _out_secs="$secs"
-            _out_mode="$mode"
+        if [[ -z "$_DRILL_BEST_SECS" || "$secs" -lt "$_DRILL_BEST_SECS" ]]; then
+            _DRILL_BEST_SECS="$secs"
+            _DRILL_BEST_MODE="$mode"
         fi
     done < "$DRILL_SCORES_FILE"
 }
