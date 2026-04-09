@@ -43,7 +43,7 @@ verify_method_restored() {
 verify_undotree_open() {
     verify_reset
     local result
-    result=$(nvim_lua "vim.iter(vim.api.nvim_list_wins()):any(function(w) local buf = vim.api.nvim_win_get_buf(w); return vim.bo[buf].filetype == 'nvim-undotree' end)")
+    result=$(nvim_lua "vim.iter(vim.api.nvim_list_wins()):any(function(w) local buf = vim.api.nvim_win_get_buf(w); return vim.bo[buf].filetype == \"nvim-undotree\" end)")
 
     if [[ "$result" == "true" ]]; then
         VERIFY_MESSAGE="Undotree window is open"
