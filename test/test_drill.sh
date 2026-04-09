@@ -86,7 +86,12 @@ test_drill_elapsed_returns_seconds() {
     DRILL_START_TIME=$(date +%s)
     local elapsed
     elapsed=$(drill_elapsed)
-    assert_equals "0" "$elapsed" "elapsed should be 0 immediately after start"
+    # Allow 0 or 1 — date +%s has 1-second resolution so a boundary crossing is possible
+    if [[ "$elapsed" -le 1 ]]; then
+        assert_true "elapsed is $elapsed (0 or 1)"
+    else
+        assert_equals "0" "$elapsed" "elapsed should be 0 or 1 immediately after start"
+    fi
 }
 
 test_exercise_timer_records_split() {

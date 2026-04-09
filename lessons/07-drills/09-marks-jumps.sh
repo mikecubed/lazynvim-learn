@@ -227,7 +227,7 @@ Type 'skip' to move on if you get stuck."
 
     # Exercise 6: Changelist with g;
     # Make a change first, then move away
-    engine_nvim_keys "25Go    # modified line\\<Esc>"
+    engine_nvim_keys "25Go    # modified line<Esc>"
     sleep 0.5
     engine_nvim_keys "80G"
     sleep 0.5
@@ -258,7 +258,7 @@ Type 'skip' to move on if you get stuck."
 
     # Exercise 8: Combined marks navigation
     # Clear marks first by resetting
-    engine_nvim_keys ":delmarks ab\\<CR>"
+    engine_nvim_keys ":delmarks ab<CR>"
     sleep 0.5
 
     engine_exercise "mk-combined" \

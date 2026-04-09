@@ -230,7 +230,7 @@ Type 'skip' to move on if you get stuck."
     [[ $_ENGINE_QUIT -eq 1 ]] && return
 
     # Make a small change so :wall has something to save
-    engine_nvim_keys "Go# saved\\<Esc>"
+    engine_nvim_keys "Go# saved<Esc>"
 
     engine_exercise "mf-wall" \
         "8. Save all buffers with :wall" \

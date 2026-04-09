@@ -266,8 +266,8 @@ drill_show_scorecard() {
     local time_str
     time_str=$(_drill_format_time "$total_secs")
 
-    # Look up best time (across all modes, excluding the run we just saved
-    # which may itself be the best)
+    # Look up best time across all modes, including the run we just saved.
+    # If this run is the new best, it will be shown here.
     local best_str=""
     _drill_find_best "$drill_name"
     if [[ -n "$_DRILL_BEST_SECS" ]]; then
@@ -360,10 +360,10 @@ drill_show_reference() {
     local text="$1"
     if ! drill_is_hard_mode; then
         # Write reference text to a temp file, then have Neovim read it.
-        # This avoids all quoting issues with single/double quotes in the text.
-        local ref_file="/tmp/lazynvim-learn-ref-$$.txt"
-        printf '%b\n' "$text" > "$ref_file"
-        nvim_exec "lua require('lazynvim-learn.reference').show_file('${ref_file}')"
+        # Uses mktemp to avoid predictable paths and respects $TMPDIR.
+        _DRILL_REF_FILE="$(mktemp "${TMPDIR:-/tmp}/lazynvim-learn-ref.XXXXXX")"
+        printf '%b\n' "$text" > "$_DRILL_REF_FILE"
+        nvim_exec "lua require('lazynvim-learn.reference').show_file('${_DRILL_REF_FILE}')"
     fi
 }
 
@@ -371,7 +371,8 @@ drill_show_reference() {
 # Close the reference window in Neovim.
 drill_hide_reference() {
     nvim_exec "lua require('lazynvim-learn.reference').hide()"
-    rm -f "/tmp/lazynvim-learn-ref-$$.txt" 2>/dev/null
+    [[ -n "${_DRILL_REF_FILE:-}" ]] && rm -f "$_DRILL_REF_FILE" 2>/dev/null
+    _DRILL_REF_FILE=""
 }
 
 # ---------------------------------------------------------------------------
@@ -520,9 +521,10 @@ _drill_box_empty() {
 _drill_box_line() {
     local w="$1"
     local content="$2"
-    # Compute visible length by stripping ANSI escapes
-    local stripped
-    stripped=$(printf '%s' "$content" | sed 's/\x1b\[[0-9;]*m//g')
+    # Compute visible length by stripping ANSI escapes (portable: literal ESC)
+    local esc stripped
+    esc=$(printf '\033')
+    stripped=$(printf '%s' "$content" | sed "s/${esc}\[[0-9;]*m//g")
     local visible_len=${#stripped}
     local pad=$(( w - visible_len ))
     if [[ "$pad" -lt 0 ]]; then
