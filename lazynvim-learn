@@ -453,6 +453,10 @@ run_drill() {
         ui_prompt
     fi
 
+    # Clean up reference file (may not have been closed if user quit early)
+    [[ -n "${_DRILL_REF_FILE:-}" ]] && rm -f "$_DRILL_REF_FILE" 2>/dev/null
+    _DRILL_REF_FILE=""
+
     # Unhook
     _ENGINE_DRILL_ACTIVE=0
     _ENGINE_EXERCISE_START_HOOK=""
