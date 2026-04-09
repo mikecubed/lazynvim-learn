@@ -15,13 +15,14 @@ An interactive terminal tutorial for learning Neovim and LazyVim. Practice real 
 
 | Module | Topics |
 |--------|--------|
+| 0. tmux Essentials *(optional)* | Panes, scrolling, prefix key — just enough to use this tutorial |
 | 1. Neovim Essentials | Modal editing, motions, text objects, buffers/windows, registers |
 | 2. LazyVim Navigation | Overview, Neo-tree, Telescope, Flash.nvim, Which-key |
-| 3. Editing Power | LSP basics, completions, formatting/linting, Treesitter |
+| 3. Editing Power | LSP basics, completions, formatting/linting, Treesitter, undo & Undotree |
 | 4. Customization | LazyVim structure, plugins, keymaps, options/autocmds, extras |
-| 5. Workflows | Lazygit, terminal, debugging (DAP), putting it all together |
+| 5. Workflows | Lazygit, terminal, debugging (DAP), tmux + Neovim, putting it all together |
 | 6. Refresher | Quick 5-minute skills review |
-| 7. Drills | 10 timed practice sessions with scoring |
+| 7. Drills | 11 timed practice sessions with scoring |
 
 ## Requirements
 
@@ -80,6 +81,10 @@ bash test/run-lesson.sh lessons/01-neovim-essentials/01-modal-editing.sh
 ```
 
 See the `docs/` directory for architecture details, lesson authoring conventions, and the verification API.
+
+## See Also
+
+- **[tmux-learn](https://github.com/mikecubed/tmux-learn)** — A companion interactive tutorial for learning tmux, with 21 lessons covering sessions, windows, panes, customization, scripting, and advanced workflows. Same exercise-based format as this tutorial.
 
 ## License
 

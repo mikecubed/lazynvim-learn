@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# lessons/05-workflows/04-putting-it-together.sh
-# Module 5, Lesson 4: Putting It All Together (Capstone)
+# lessons/05-workflows/05-putting-it-together.sh
+# Module 5, Lesson 5: Putting It All Together (Capstone)
 
 lesson_info() {
     LESSON_TITLE="Putting It All Together"
