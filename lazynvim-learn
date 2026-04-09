@@ -244,7 +244,7 @@ discover_modules() {
             local name
             name="$(basename "$dir")"
             # Skip special modules — accessed via the menu, not as regular modules
-            [[ "$name" == "06-refresher" || "$name" == "07-drills" ]] && continue
+            [[ "$name" == "00-tmux-essentials" || "$name" == "06-refresher" || "$name" == "07-drills" ]] && continue
             echo "$name"
         done
 }
@@ -323,7 +323,7 @@ run_lesson() {
         progress_mark_complete "$module/$lesson"
 
         # Show the completion screen after the final capstone lesson
-        if [[ "$module" == "05-workflows" && "$lesson" == "04-putting-it-together" ]]; then
+        if [[ "$module" == "05-workflows" && "$lesson" == "05-putting-it-together" ]]; then
             show_completion_screen
         fi
     fi
@@ -597,14 +597,15 @@ main_menu() {
 
         # Extra menu options
         local extra_start=$(( ${#modules[@]} + 1 ))
-        echo "  $extra_start) Drills (practice & build speed)"
-        echo "  $(( extra_start + 1 ))) Continue (resume last in-progress)"
-        echo "  $(( extra_start + 2 ))) Reset Progress"
-        echo "  $(( extra_start + 3 ))) Quit"
+        echo "  $extra_start) tmux Essentials (optional intro)"
+        echo "  $(( extra_start + 1 ))) Drills (practice & build speed)"
+        echo "  $(( extra_start + 2 ))) Continue (resume last in-progress)"
+        echo "  $(( extra_start + 3 ))) Reset Progress"
+        echo "  $(( extra_start + 4 ))) Quit"
         echo ""
 
         local choice
-        local max_choice=$(( ${#modules[@]} + 4 ))
+        local max_choice=$(( ${#modules[@]} + 5 ))
         while true; do
             printf "Select an option: "
             read -r choice
@@ -629,10 +630,14 @@ main_menu() {
             fi
 
         elif [[ "$choice" -eq "$extra_start" ]]; then
+            # tmux Essentials (optional, no exercises)
+            run_lesson "00-tmux-essentials" "01-tmux-basics"
+
+        elif [[ "$choice" -eq $(( extra_start + 1 )) ]]; then
             # Drills submenu
             drills_menu
 
-        elif [[ "$choice" -eq $(( extra_start + 1 )) ]]; then
+        elif [[ "$choice" -eq $(( extra_start + 2 )) ]]; then
             # Continue
             local last
             last="$(find_last_in_progress)"
@@ -647,7 +652,7 @@ main_menu() {
                 run_lesson "$resume_module" "$resume_lesson"
             fi
 
-        elif [[ "$choice" -eq $(( extra_start + 2 )) ]]; then
+        elif [[ "$choice" -eq $(( extra_start + 3 )) ]]; then
             # Reset Progress
             printf "Are you sure you want to reset all progress? [y/N] "
             local confirm
