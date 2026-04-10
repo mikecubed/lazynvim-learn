@@ -130,11 +130,15 @@ progress_module_unlocked() {
         lessons_dir="$lib_dir/../lessons"
     fi
 
-    # Gather sorted list of module directories
+    # Gather sorted list of module directories, skipping special modules
+    # that are accessed via the menu and do not participate in progression
     local modules=()
     if [[ -d "$lessons_dir" ]]; then
         while IFS= read -r -d '' dir; do
-            modules+=("$(basename "$dir")")
+            local name
+            name="$(basename "$dir")"
+            [[ "$name" == "00-tmux-essentials" || "$name" == "06-refresher" || "$name" == "07-drills" ]] && continue
+            modules+=("$name")
         done < <(find "$lessons_dir" -mindepth 1 -maxdepth 1 -type d -print0 2>/dev/null | sort -z)
     fi
 
